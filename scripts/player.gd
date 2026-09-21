@@ -1,13 +1,21 @@
 extends CharacterBody2D
 
-## Nhan vat nguoi choi: di chuyen 4 huong va doi frame hoat anh theo huong di.
+## Nhan vat nguoi choi: di chuyen 4 huong, doi frame hoat anh theo huong di,
+## va hien trang bi bang he thong SPRITE PHAN LOP.
 ##
 ## CharacterBody2D la loai node danh cho nhan vat co va cham nhung do BAN
 ## dieu khien (khac voi RigidBody2D bi vat ly keo di).
+##
+## === SPRITE PHAN LOP ===
+## Nhan vat khong phai mot anh duy nhat ma la 4 Sprite2D chong len nhau:
+##     Body   -> than the (luon hien)
+##     Outfit -> bo do: giap + quan
+##     Helmet -> mu
+##     Weapon -> vu khi, chi hien khi dang chien dau
+## Ca 4 lop dung chung MOT chi so frame, nen chung luon khop nhau tuyet doi.
+## Nho vay 3 bo do + 3 mu chi can 6 file anh nhung ra duoc 9 ve ngoai.
 
 
-## @export nghia la bien nay hien ra trong Inspector cua Godot,
-## ban chinh duoc ma khong can sua code.
 ## Tinh bang pixel/giay. Khi doi luoi tu 16px sang 32px, moi thu to gap doi
 ## nen toc do cung phai gap doi thi cam giac di chuyen moi giu nguyen.
 @export var speed: float = 140.0
@@ -15,18 +23,54 @@ extends CharacterBody2D
 ## So frame chay qua trong 1 giay khi di bo.
 @export var anim_fps: float = 8.0
 
-# Thu tu hang trong file assets/sprites/player.png
+# Thu tu hang trong moi file sprite sheet.
 const DIR_DOWN := 0
 const DIR_UP := 1
 const DIR_LEFT := 2
 const DIR_RIGHT := 3
 
+# --- Danh muc trang bi ---
+# Chuoi rong "" nghia la khong mac gi (lop do se bi an di).
+# Day chi la ban tam de thu nghiem. Sau nay se thay bang he thong tui do
+# doc du lieu tu file Resource (.tres), khong viet cung trong code nhu the nay.
+const BODIES: Array[String] = [
+	"res://assets/sprites/body_male.png",
+	"res://assets/sprites/body_female.png",
+]
+const OUTFITS: Array[String] = [
+	"",
+	"res://assets/sprites/outfit_cloth.png",
+	"res://assets/sprites/outfit_leather.png",
+]
+const HELMETS: Array[String] = [
+	"",
+	"res://assets/sprites/helmet_iron.png",
+]
+const WEAPONS: Array[String] = [
+	"res://assets/sprites/weapon_sword.png",
+	"res://assets/sprites/weapon_bow.png",
+]
+
 var _facing: int = DIR_DOWN
 var _anim_time: float = 0.0
 var _joystick: Node = null
 
+var _body_index: int = 0
+var _outfit_index: int = 1
+var _helmet_index: int = 0
+var _weapon_index: int = 0
+var _in_combat: bool = false
+
 # @onready = lay node con sau khi scene da dung xong.
-@onready var _sprite: Sprite2D = $Sprite2D
+@onready var _body: Sprite2D = $Body
+@onready var _outfit: Sprite2D = $Outfit
+@onready var _helmet: Sprite2D = $Helmet
+@onready var _weapon: Sprite2D = $Weapon
+@onready var _layers: Array[Sprite2D] = [_body, _outfit, _helmet, _weapon]
+
+
+func _ready() -> void:
+	_refresh_equipment()
 
 
 func _physics_process(delta: float) -> void:
@@ -67,7 +111,7 @@ func _read_input() -> Vector2:
 	return direction
 
 
-## Chon frame dung trong sprite sheet 4 cot x 4 hang.
+## Chon frame dung trong luoi 4 cot x 4 hang, roi gan cho CA BON lop.
 func _update_animation(direction: Vector2, delta: float) -> void:
 	if direction != Vector2.ZERO:
 		# Dang di: cap nhat huong nhin theo truc co do lech lon hon.
@@ -80,9 +124,59 @@ func _update_animation(direction: Vector2, delta: float) -> void:
 		# Dung yen: quay ve frame 0 (tu the dung).
 		_anim_time = 0.0
 
-	var column := int(_anim_time) % _sprite.hframes
+	_apply_frame()
+
+
+## Gan cung MOT chi so frame cho ca bon lop. Day la toan bo bi mat cua he
+## thong phan lop - cac lop khop nhau vi chung luon o cung mot frame.
+func _apply_frame() -> void:
 	# Sprite2D danh so frame tu trai sang phai, tren xuong duoi.
-	_sprite.frame = _facing * _sprite.hframes + column
+	var column := int(_anim_time) % _body.hframes
+	var frame_index := _facing * _body.hframes + column
+	for layer in _layers:
+		layer.frame = frame_index
+
+
+## Nap dung anh cho tung lop theo trang bi hien tai.
+func _refresh_equipment() -> void:
+	_set_layer(_body, BODIES[_body_index])
+	_set_layer(_outfit, OUTFITS[_outfit_index])
+	_set_layer(_helmet, HELMETS[_helmet_index])
+	# Vu khi chi tuot ra khi dang chien dau.
+	_set_layer(_weapon, WEAPONS[_weapon_index] if _in_combat else "")
+
+
+## Gan anh cho mot lop. Duong dan rong = khong mac gi = an lop do di.
+func _set_layer(layer: Sprite2D, path: String) -> void:
+	if path.is_empty():
+		layer.visible = false
+		return
+	layer.texture = load(path)
+	layer.visible = true
+
+
+## Phim tam de xem he thong phan lop hoat dong. Se bo khi co menu trang bi that.
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+
+	match event.keycode:
+		KEY_1:
+			_body_index = (_body_index + 1) % BODIES.size()
+		KEY_2:
+			_outfit_index = (_outfit_index + 1) % OUTFITS.size()
+		KEY_3:
+			_helmet_index = (_helmet_index + 1) % HELMETS.size()
+		KEY_4:
+			_weapon_index = (_weapon_index + 1) % WEAPONS.size()
+		KEY_5:
+			_in_combat = not _in_combat
+		_:
+			return
+
+	_refresh_equipment()
+	# Gan lai frame ngay, neu khong lop vua doi se hien frame 0 mot nhip.
+	_apply_frame()
 
 
 ## Tim joystick ao. Tim lai moi khi chua co vi thu tu khoi tao cua cac node

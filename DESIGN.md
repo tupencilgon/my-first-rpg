@@ -5,27 +5,27 @@
 
 ---
 
-## 1. Một câu
+## 1. Câu chuyện
 
-> Một thợ rèn trẻ ở ngôi làng miền núi. Hầm mỏ dưới làng bỗng trào lên quái
-> vật, cậu phải tự rèn lấy vũ khí và xuống hang tìm hiểu chuyện gì đang xảy ra.
+> Sau một đêm ngôi làng bị tấn công, mẹ và em trai mất tích. Nhân vật chính
+> lên đường tìm tung tích họ. Manh mối đầu tiên dẫn xuống hầm mỏ dưới làng.
 
-Đây là bản nháp — bạn sửa thoải mái. Câu này chỉ có một nhiệm vụ: quyết định
-phong cách art (ở đây là **trung cổ, làng quê, hang mỏ**), và giải thích được
-vì sao người chơi lại quan tâm tới trang bị.
+Bối cảnh: **trung cổ, làng quê miền núi**. Đó là tất cả những gì art cần biết
+lúc này.
 
-Lưu ý: câu pitch này được chọn để **khớp với cơ chế bạn đã quyết**. Thợ rèn →
-tự làm trang bị → trang bị hiện lên người → có lý do để xuống hang lấy quặng.
-Cốt truyện phục vụ gameplay, không phải ngược lại.
+Người chơi chọn **bản nam hoặc nữ** ở đầu game.
+
+**Chưa chốt** (và chưa cần chốt): ai tấn công làng, vì sao, mẹ và em trai giờ ở
+đâu, kết thúc ra sao. Những thứ đó không ràng buộc một pixel nào — viết sau.
 
 ---
 
 ## 2. Core loop — 30 giây lặp đi lặp lại
 
 ```
-Xuống hang  →  gặp quái  →  đánh cận chiến  →  nhặt quặng
-     ↑                                              ↓
-     └────  xuống sâu hơn  ←  rèn/nâng trang bị  ←  về làng
+Xuống hang  →  gặp quái  →  đánh (cận chiến / bắn cung)  →  nhặt quặng
+     ↑                                                          ↓
+     └────  xuống sâu hơn  ←  rèn/nâng trang bị  ←  về làng  ←──┘
 ```
 
 Đây là phần quan trọng nhất của cả tài liệu. Nếu vòng lặp này chơi không
@@ -38,13 +38,14 @@ bằng hình vuông mà vẫn thấy đã tay thì mới đáng vẽ art.
 
 ## 3. Danh sách động từ
 
-Đây là thứ đẻ ra bảng kê art ở mục 5.
+Đây là thứ đẻ ra bảng kê art ở mục 6.
 
 | Động từ | Cần animation? | Ghi chú |
 |---|---|---|
-| Đi bộ 4 hướng | Có | Đã làm xong |
+| Đi bộ 4 hướng | Có | ✅ Đã xong |
 | Đứng yên | Tái dùng frame 0 | Không tốn art thêm |
-| Tấn công cận chiến | Có | 4 hướng |
+| Chém cận chiến | Có | 4 hướng |
+| Giương cung bắn | Có | 4 hướng — **animation khác hẳn chém** |
 | Bị đánh | Có | 4 hướng, ngắn |
 | Chết | Có | 1 animation dùng chung |
 | Nhặt đồ | Không | Chạm vào là nhặt |
@@ -55,132 +56,173 @@ bằng hình vuông mà vẫn thấy đã tay thì mới đáng vẽ art.
 
 ---
 
-## 4. Kiến trúc sprite phân lớp — QUYẾT ĐỊNH QUAN TRỌNG NHẤT
+## 4. Sprite phân lớp — ✅ ĐÃ DỰNG XONG
 
-Bạn muốn **mũ, giáp, quần hiện lên người**, và **vũ khí chỉ xuất hiện khi
-chiến đấu**. Làm được, nhưng phải làm đúng cách.
-
-### Cách sai (đừng làm)
-
-Vẽ mỗi tổ hợp trang bị thành một sprite sheet hoàn chỉnh. Chi phí là **phép
-nhân**: 3 bộ giáp × 3 mũ = 9 sheet đầy đủ. Thêm một cái mũ nữa là thành 12.
-
-### Cách đúng: xếp lớp (paper doll)
-
-Nhân vật là **nhiều Sprite2D chồng lên nhau**, tất cả cùng dùng một chỉ số
-frame:
+Nhân vật là **4 Sprite2D chồng lên nhau**, tất cả dùng chung một chỉ số frame:
 
 ```
 Player (CharacterBody2D)
-├─ Sprite2D  "Body"     ← thân thể trần, luôn hiện
-├─ Sprite2D  "Outfit"   ← giáp + quần (1 lớp)
-├─ Sprite2D  "Helmet"   ← mũ
-└─ Sprite2D  "Weapon"   ← vũ khí, chỉ hiện khi đang chiến đấu
+├─ Body     ← thân thể: da, tóc, mặt. Lớp duy nhất có VIỀN.
+├─ Outfit   ← bộ đồ = giáp + quần (đã chốt gộp làm một)
+├─ Helmet   ← mũ
+└─ Weapon   ← vũ khí, chỉ hiện khi đang chiến đấu
 ```
 
-Mỗi lớp là một file PNG riêng, **cùng kích thước 128×128, cùng bố cục 4×4**,
-phần không có gì thì để trong suốt. Code chỉ cần gán cùng một `frame` cho cả
-bốn lớp là xong — đúng logic bạn đang có trong `player.gd`, chỉ nhân lên 4.
+Mỗi lớp là một PNG **128×128, bố cục 4×4**, phần trống để trong suốt.
+`player.gd` gán cùng một `frame` cho cả bốn lớp — xem hàm `_apply_frame()`.
 
-Chi phí trở thành **phép cộng**: 3 bộ giáp + 3 mũ = 6 file, vẫn ra 9 vẻ ngoài.
+Chi phí art là **phép cộng** chứ không phải phép nhân:
 
-| Số bộ giáp × số mũ | Cách sai | Cách đúng |
+| Số bộ đồ × số mũ | Không phân lớp | Có phân lớp |
 |---|---|---|
-| 2 × 2 | 4 sheet | 4 sheet |
 | 3 × 3 | 9 sheet | 6 sheet |
 | 5 × 5 | 25 sheet | 10 sheet |
 | 8 × 8 | 64 sheet | 16 sheet |
 
-Càng về sau càng chênh. Đây là lý do phải quyết định **trước khi vẽ**.
+### Ràng buộc bắt buộc
 
-### Một điều chỉnh tôi đề nghị
+1. Mọi lớp **cùng 128×128, cùng bố cục 4×4**.
+2. Mọi lớp dùng chung bộ toạ độ trong `GEOM` (xem `tools/gen_placeholder_art.py`).
+   Lệch một pixel là quần áo lệch khỏi người.
+3. **Bản nam và bản nữ phải cùng dáng người.** Chỉ khác tóc và mặt.
 
-Bạn nói "mũ, giáp, quần" là ba món. Tôi đề nghị **gộp giáp và quần thành một
-lớp "bộ đồ"**, giữ mũ riêng.
+Ý số 3 là ràng buộc đắt nhất trong tài liệu này. Nếu hai dáng người khác nhau,
+**mọi bộ đồ và mọi cái mũ phải vẽ hai lần** — nhân đôi toàn bộ khối lượng art
+trang bị, mãi mãi. Giữ chung dáng người thì bản nữ chỉ tốn thêm đúng một lớp
+Body, còn toàn bộ trang bị dùng chung.
 
-Lý do: quần ở góc nhìn top-down chiếm rất ít pixel và gần như không ai để ý,
-nhưng tách nó ra thì tốn thêm nguyên một bộ 46 frame cho mỗi món. Gộp lại tiết
-kiệm khoảng một phần ba khối lượng art mà người chơi không nhận ra khác biệt.
+### Thử ngay trong game
 
-Chỉ số trong game vẫn có thể tách riêng mũ / giáp / quần bình thường — chỉ
-phần **hình ảnh** là gộp.
+Chạy game rồi bấm:
 
-Bạn không đồng ý thì nói, tôi tách thành ba lớp, code y hệt, chỉ tốn art hơn.
+| Phím | Tác dụng |
+|---|---|
+| `1` | Đổi nam / nữ |
+| `2` | Đổi bộ đồ (không có → vải → da) |
+| `3` | Bật/tắt mũ sắt |
+| `4` | Đổi vũ khí (kiếm / cung) |
+| `5` | Vào/ra chế độ chiến đấu (rút/cất vũ khí) |
+
+Đây là phím tạm để kiểm tra hệ thống, sẽ bỏ khi có menu trang bị thật.
 
 ---
 
-## 5. Bảng kê art cho bản demo
+## 5. Về vũ khí tầm xa (cung)
 
-Một "frame" = một ô 32×32 trong sprite sheet.
+Bạn hỏi cung có phức tạp không. Câu trả lời tách làm ba phần:
+
+**Code: rẻ, bạn đúng.** Mũi tên là một `Area2D` bay theo hướng, chạm thì gây
+sát thương rồi tự huỷ. Khoảng 50 dòng. Đây là phần dễ nhất.
+
+**Art: đắt hơn bạn tưởng.** Không phải chỉ thêm cái cung vào lớp Weapon.
+Động tác **giương cung khác hoàn toàn động tác chém** — nên lớp **Body** cần
+thêm một bộ animation tấn công thứ hai, nhân cho cả bản nam và nữ:
+
+- +16 frame bắn cung cho Body nam
+- +16 frame bắn cung cho Body nữ
+- +20 frame cho lớp Weapon kiểu cung
+- +4 frame mũi tên bay
+
+**Thiết kế: đây mới là chỗ thật sự tốn.** Bắn xa phá vỡ thiết kế quái vật
+cận chiến. Nếu người chơi bắn được từ ngoài tầm nhìn của quái thì mọi con quái
+chỉ biết lao vào đánh giáp lá cà đều trở nên vô hại — người chơi chỉ việc lùi
+và bắn. Phải xử lý bằng một trong ba cách:
+
+1. Quái lao tới rất nhanh, buộc người chơi phải rút kiếm
+2. Có quái biết bắn lại
+3. Mũi tên là tài nguyên hữu hạn, phải nhặt lại
+
+Không cần quyết định ngay bây giờ, nhưng phải quyết trước khi làm quái.
+
+**Kết luận:** giữ cung trong demo được, nhưng **làm kiếm trước cho xong hẳn**
+rồi mới thêm cung. Đừng làm song song hai hệ thống chiến đấu khi chưa hệ thống
+nào chạy trọn vẹn.
+
+---
+
+## 6. Bảng kê art cho bản demo
+
+Một "frame" = một ô 32×32.
 
 ### Nhân vật chính
 
 | Lớp | Nội dung | Frame |
 |---|---|---|
-| Body | đi 16 + tấn công 16 + bị đánh 8 + chết 6 | **46** |
-| Outfit | 46 frame cho mỗi bộ đồ | 46 × số bộ |
-| Helmet | 46 frame mỗi mũ (vùng vẽ nhỏ, nhanh hơn ~3 lần) | 46 × số mũ |
-| Weapon | chỉ frame tấn công + cầm | 20 × số vũ khí |
-
-Demo gợi ý: **2 bộ đồ, 2 mũ, 2 vũ khí** → 46 + 92 + 92 + 40 = **270 frame**.
+| Body nam | đi 16 + chém 16 + bị đánh 8 + chết 6 | 46 |
+| Body nữ | như trên | 46 |
+| Bắn cung | +16 cho mỗi Body | 32 |
+| Outfit | 46 × 2 bộ — **dùng chung cả nam lẫn nữ** | 92 |
+| Helmet | 46 × 2 mũ — **dùng chung** | 92 |
+| Weapon | kiếm 20 + cung 20 + mũi tên 4 | 44 |
+| | **Tổng nhân vật** | **352** |
 
 ### Phần còn lại
 
 | Hạng mục | Ước tính |
 |---|---|
-| 3 loại quái (đi + đánh + chết) | ~90 frame |
-| Tile làng (cỏ, đường, tường, mái, nước, hàng rào) | ~40 tile |
-| Tile hang (đá, sàn, nhũ đá, quặng) | ~25 tile |
-| 4 NPC (chỉ cần đứng + đi chậm) | ~32 frame |
-| Icon UI (item, máu, nút bấm) | ~20 icon |
+| 3 loại quái (đi + đánh + chết) | ~90 |
+| Tile làng (cỏ, đường, tường, mái, nước, hàng rào) | ~40 |
+| Tile hang (đá, sàn, nhũ đá, quặng) | ~25 |
+| 4 NPC (chỉ cần đứng + đi chậm) | ~32 |
+| Icon UI (vật phẩm, máu, nút) | ~20 |
 
-**Tổng demo: khoảng 480 ô art.**
+**Tổng demo: khoảng 560 ô art.**
 
-Với người mới vẽ pixel art, tốc độ thực tế khoảng 4–8 ô mỗi giờ khi đã có
-animation. Tức là **60–120 giờ vẽ** cho bản demo. Con số này nghe nản nhưng
-biết trước vẫn hơn.
+Hai thứ vừa thêm (bản nữ + cung) chỉ làm tăng từ ~480 lên ~560, tức **+17%**.
+Nếu không có hệ thống phân lớp, riêng việc thêm bản nữ đã nhân đôi toàn bộ
+art trang bị.
 
-**Cách sống sót:** làm 1 bộ đồ, 1 mũ, 1 vũ khí, 1 loại quái trước. Chơi được
-đã. Rồi thêm dần. Đừng vẽ hết 480 ô rồi mới ghép vào game.
+### Về việc dùng AI để vẽ
+
+AI đẩy nhanh được **concept, tile nền, và icon vật phẩm tĩnh** — những thứ
+không đòi hỏi nhất quán giữa các frame.
+
+Chỗ AI yếu đúng vào chỗ dự án này cần nhất: **các frame animation liên tiếp
+phải nhất quán từng pixel, và các lớp phải khớp nhau tuyệt đối.** Ảnh AI tạo
+ra thường chỉ *trông giống* pixel art — viền bị khử răng cưa, kích thước pixel
+không đều, bảng màu trôi giữa các lần tạo. Ghép bốn lớp như vậy lên nhau sẽ
+lệch.
+
+Cách dùng thực tế: **AI ra concept → vẽ lại trên lưới thật trong Aseprite.**
+Vẫn nhanh hơn vẽ từ đầu nhiều, nhưng đừng tính là xong ngay khi AI xuất ảnh.
 
 ---
 
-## 6. Phạm vi demo
+## 7. Phạm vi demo
 
 **Có trong demo:**
 - 1 ngôi làng (4 NPC, 1 lò rèn, vài ngôi nhà)
-- 1 hang động (3 tầng, 3 loại quái)
-- Chiến đấu cận chiến
+- 1 hang động / hầm mỏ (3 tầng, 3 loại quái)
+- Chiến đấu cận chiến + cung
+- Nhân vật nam/nữ
 - Trang bị nhìn thấy được (mũ + bộ đồ + vũ khí)
 - Rèn/nâng cấp trang bị tại làng
-- Lưu/tải game
-- Menu chính
+- Lưu/tải game, menu chính
 
-**Chưa có trong demo (ghi ra để khỏi quên, và để khỏi làm sớm):**
-- Nhiều khu vực hơn
+**Chưa có trong demo** (ghi ra để khỏi quên, và để khỏi làm sớm):
+- Các khu vực tiếp theo của hành trình tìm mẹ và em trai
 - Nhiệm vụ phụ
 - Hệ thống chế tạo phức tạp
-- Ngày/đêm
-- Thời tiết
-- Nhiều nhân vật chơi được
+- Ngày/đêm, thời tiết
 
 > Mỗi khi nảy ra ý tưởng mới, ghi vào mục này chứ đừng làm ngay. Ba tháng sau
 > đọc lại, phần lớn sẽ tự thấy không cần.
 
 ---
 
-## 7. Thứ tự làm
+## 8. Thứ tự làm
 
-1. TileMapLayer — dựng làng và hang bằng tile tạm
-2. Hệ thống sprite phân lớp cho nhân vật (mục 4)
-3. State machine cho nhân vật: đi / tấn công / bị đánh / chết
-4. Một loại quái, một kiểu AI đơn giản
+1. ~~Hệ thống sprite phân lớp~~ ✅ **xong**
+2. **TileMapLayer** — dựng làng và hang bằng tile ← *đang ở đây*
+3. State machine cho nhân vật: đi / chém / bị đánh / chết
+4. Một loại quái, AI đơn giản
 5. Máu, sát thương, chết, hồi sinh
 6. Nhặt đồ + túi đồ
-7. Trang bị + hiện lên ngoại hình
-8. NPC + hộp thoại
-9. Lò rèn / nâng cấp
-10. Lưu/tải, menu chính, âm thanh
-11. Export PC + Android
+7. Menu trang bị thật (thay 5 phím tạm ở mục 4)
+8. **Rồi mới** thêm cung + mũi tên + chỉnh lại AI quái
+9. NPC + hộp thoại
+10. Lò rèn / nâng cấp
+11. Lưu/tải, menu chính, âm thanh
+12. Export PC + Android
 
 Art thật chen vào bất cứ lúc nào sau bước 5 — khi gameplay đã đứng vững.

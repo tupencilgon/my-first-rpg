@@ -1,7 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="2_sheet"]
+[ext_resource type="Texture2D" path="res://assets/sprites/body_male.png" id="2_body"]
+[ext_resource type="Texture2D" path="res://assets/sprites/outfit_cloth.png" id="3_outfit"]
+[ext_resource type="Texture2D" path="res://assets/sprites/helmet_iron.png" id="4_helmet"]
+[ext_resource type="Texture2D" path="res://assets/sprites/weapon_sword.png" id="5_weapon"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_feet"]
 radius = 7.0
@@ -9,9 +12,29 @@ radius = 7.0
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_player")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Body" type="Sprite2D" parent="."]
 texture_filter = 1
-texture = ExtResource("2_sheet")
+texture = ExtResource("2_body")
+hframes = 4
+vframes = 4
+
+[node name="Outfit" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("3_outfit")
+hframes = 4
+vframes = 4
+
+[node name="Helmet" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+texture = ExtResource("4_helmet")
+hframes = 4
+vframes = 4
+
+[node name="Weapon" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+texture = ExtResource("5_weapon")
 hframes = 4
 vframes = 4
 

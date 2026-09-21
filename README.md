@@ -1,4 +1,4 @@
-﻿# My First RPG
+# My First RPG
 
 Game 2D pixel art top-down, làm bằng **Godot 4.7** + **GDScript**.
 Mục tiêu nền tảng: **Windows/PC, Android, iOS**.
@@ -42,6 +42,9 @@ godot -e --path .
 | Tay cầm | D-pad |
 | Điện thoại | Chạm & kéo ở **nửa trái màn hình** → joystick ảo hiện ra |
 
+Phím tạm để thử hệ thống trang bị phân lớp: `1` đổi nam/nữ, `2` đổi bộ đồ,
+`3` bật/tắt mũ, `4` đổi kiếm/cung, `5` vào/ra chế độ chiến đấu.
+
 Muốn thử joystick ảo trên PC: chọn node `UI/TouchJoystick` trong Godot, bật
 `Always Show` trong Inspector, rồi vào **Project → Project Settings → Input Devices →
 Pointing** bật **Emulate Touch From Mouse**.
@@ -61,13 +64,13 @@ my-first-rpg/
 │  ├─ player.gd               di chuyển & hoạt ảnh 4 hướng
 │  └─ touch_joystick.gd       joystick ảo cho điện thoại
 ├─ assets/
-│  ├─ sprites/player.png      sprite sheet 4 cột × 4 hàng (mỗi frame 32×32)
+│  ├─ sprites/*.png           các lớp sprite: body_*, outfit_*, helmet_*, weapon_*
 │  └─ tiles/floor.png, wall.png
 └─ tools/
    └─ gen_placeholder_art.py  script Python tạo art tạm (xem mục 6)
 ```
 
-**Cách sprite sheet hoạt động:** `player.png` là ảnh 128×128, chia thành lưới 4×4.
+**Cách sprite sheet hoạt động:** mỗi lớp là ảnh 128×128, chia thành lưới 4×4.
 Mỗi **hàng** là một hướng (0 = xuống, 1 = lên, 2 = trái, 3 = phải), mỗi **cột** là một
 frame của chu kỳ bước chân. `player.gd` chỉ việc đổi số `frame` của Sprite2D.
 
@@ -112,7 +115,7 @@ Art hiện tại là **placeholder** do script Python vẽ ra — xấu nhưng �
 đủ để bạn tập trung vào lập trình trước.
 
 Khi vẽ art thật, chỉ cần **ghi đè file PNG** trong `assets/` với **đúng kích thước cũ**
-(`player.png` = 128×128, tile = 32×32). Không phải sửa một dòng code nào.
+(mỗi lớp sprite = 128×128, tile = 32×32). Không phải sửa một dòng code nào. Xem `DESIGN.md` mục 4 về hệ thống phân lớp.
 
 | Công cụ | Giá | Ghi chú |
 |---|---|---|
