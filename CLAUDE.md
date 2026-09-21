@@ -1,4 +1,4 @@
-﻿# Hướng dẫn cho Claude khi làm việc trong project này
+# Hướng dẫn cho Claude khi làm việc trong project này
 
 ## Quy tắc bắt buộc: luôn bật Godot sau khi xong
 
@@ -42,6 +42,15 @@ Người dùng **chưa từng lập trình bao giờ** và trao đổi bằng **
 - Luôn tự kiểm chứng (chạy headless, chụp ảnh render) trước khi nói "xong"
 - Giữ phạm vi nhỏ — đây là game đầu tay, mục tiêu là *hoàn thành*, không phải *hoành tráng*
 
+## Thiết kế game
+
+Các quyết định đã chốt nằm trong `DESIGN.md` — đọc trước khi đề xuất tính năng hay art.
+Tóm tắt: top-down RPG, chiến đấu cận chiến, trang bị hiện lên ngoại hình bằng
+**sprite phân lớp** (Body / Outfit / Helmet / Weapon, mỗi lớp 1 file PNG 128×128
+cùng bố cục 4×4, cùng chỉ số frame). Demo gồm 1 làng + 1 hang động.
+
+Ý tưởng mới ngoài phạm vi demo → ghi vào mục 6 của `DESIGN.md`, không làm ngay.
+
 ## Quy ước kỹ thuật
 
 - **GDScript thụt đầu dòng bằng TAB**, không dùng space (Godot báo lỗi nếu trộn lẫn)
@@ -51,4 +60,5 @@ Người dùng **chưa từng lập trình bao giờ** và trao đổi bằng **
 - Độ phân giải gốc phóng to theo số nguyên (×3 = 1080p) — không phá vỡ thiết lập này
 - Vật thể dễ nhận ra (hoa, đá, nấm) KHÔNG được nhét vào tile nền: sẽ lặp thành lưới đều
 - Renderer **GL Compatibility** để chạy được trên điện thoại đời cũ
+- Mọi lớp sprite nhân vật phải cùng kích thước 128×128 và cùng bố cục 4×4, phần trống để trong suốt
 - Art trong `assets/` là placeholder sinh bằng `tools/gen_placeholder_art.py`; khi thay art thật phải **giữ nguyên kích thước ảnh** để không phải sửa code
