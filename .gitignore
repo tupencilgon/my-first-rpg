@@ -1,0 +1,14 @@
+# Thu muc Godot tu sinh ra (cache import, du lieu tam). Khong can luu.
+.godot/
+
+# File export tam
+/build/
+/export/
+
+# export_presets.cfg co the chua mat khau keystore Android -> khong day len git.
+export_presets.cfg
+
+# Windows
+Thumbs.db
+desktop.ini
+__pycache__/

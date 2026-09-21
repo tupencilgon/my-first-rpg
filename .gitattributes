@@ -1,0 +1,21 @@
+# Buoc moi file van ban dung xuong dong kieu LF trong kho Git.
+#
+# Ly do: Windows dung CRLF, macOS/Linux dung LF. Sau nay khi build iOS tren
+# Mac (hoac dung dich vu build cloud chay Linux), neu khong co file nay thi
+# Git se bao ca ngan dong bi "thay doi" du ban khong sua gi.
+* text=auto eol=lf
+
+# File nhi phan - Git khong duoc dong vao noi dung.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.ogg  binary
+*.wav  binary
+*.mp3  binary
+*.ttf  binary
+*.otf  binary
+*.zip  binary
+*.apk  binary
+*.exe  binary
