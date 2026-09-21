@@ -1,0 +1,40 @@
+; TileSet - "bo tem" cua game.
+;
+; File nay noi cho Godot biet:
+;   1. Anh atlas nao chua cac tile  (terrain.png)
+;   2. Moi o to bao nhieu           (32x32)
+;   3. O nao co va cham, o nao di qua duoc
+;
+; Toa do o duoi day phai khop voi bien ATLAS trong tools/gen_placeholder_art.py
+;
+;   0:0 co         1:0 duong dat   2:0 san da     3:0 san go
+;   0:1 nuoc *     1:1 tuong da *  2:1 san hang   3:1 vach hang *
+;
+;   (*) = co va cham, nguoi choi khong di qua duoc
+;
+; Ban NEN sua file nay qua giao dien Godot (chon TileMapLayer -> tab TileSet
+; o khung duoi) thay vi sua tay.
+
+[gd_resource type="TileSet" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/tiles/terrain.png" id="1_terrain"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_terrain"]
+texture = ExtResource("1_terrain")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+2:1/0 = 0
+3:1/0 = 0
+3:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[resource]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_terrain")

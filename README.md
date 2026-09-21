@@ -58,14 +58,15 @@ my-first-rpg/
 ├─ project.godot              cấu hình game (độ phân giải, renderer...)
 ├─ icon.svg                   icon hiện trên Godot & khi export
 ├─ scenes/
-│  ├─ main.tscn               màn chơi: sàn, tường, người chơi, UI
+│  ├─ main.tscn               màn chơi: 2 lớp TileMap, người chơi, UI
 │  └─ player.tscn             nhân vật (sprite + va chạm + camera)
 ├─ scripts/
 │  ├─ player.gd               di chuyển & hoạt ảnh 4 hướng
 │  └─ touch_joystick.gd       joystick ảo cho điện thoại
 ├─ assets/
 │  ├─ sprites/*.png           các lớp sprite: body_*, outfit_*, helmet_*, weapon_*
-│  └─ tiles/floor.png, wall.png
+│  ├─ tiles/terrain.png       atlas: tất cả tile trong 1 ảnh (4 cột × 2 hàng)
+│  └─ tiles/terrain.tres      TileSet: cắt atlas thành lưới 32×32, khai báo va chạm
 └─ tools/
    └─ gen_placeholder_art.py  script Python tạo art tạm (xem mục 6)
 ```
@@ -76,36 +77,41 @@ frame của chu kỳ bước chân. `player.gd` chỉ việc đổi số `frame`
 
 ---
 
-## 5. Lộ trình học — làm theo thứ tự này
+## 5. Vẽ bản đồ bằng TileMapLayer
 
-Mỗi bước nên hoàn thành và **chạy thử được** trước khi sang bước sau. Đừng ôm việc lớn.
+Bản đồ nằm trong `scenes/main.tscn`, gồm **hai lớp**:
 
-### Tuần 1–2: Làm quen
-- [ ] Chạy được game, đọc hết `scripts/player.gd`, hiểu từng dòng
-- [ ] Đổi `speed` trong Inspector, xem nhân vật nhanh/chậm ra sao
-- [ ] Tự thêm nút **chạy nhanh** khi giữ `Shift`
-- [ ] Học chính thức: https://docs.godotengine.org/en/stable/getting_started/step_by_step/
+| Lớp | Dùng cho |
+|---|---|
+| `Ground` | Cỏ, đường đất, sàn nhà — những thứ **đi qua được** |
+| `Blocking` | Tường, nước — những thứ **chặn đường** |
 
-### Tuần 3–4: Bản đồ thật
-- [ ] Học **TileMapLayer** + **TileSet** (đây là công cụ vẽ map của Godot)
-- [ ] Thay 4 bức tường cứng hiện tại bằng một map vẽ bằng TileMapLayer
-- [ ] Thêm **Y-sort** để nhân vật đi được ra sau cái cây / ngôi nhà
+Cách vẽ:
 
-### Tuần 5–6: Có "game" thật sự
-- [ ] Thêm **NPC** đứng yên + vùng `Area2D` để phát hiện người chơi lại gần
-- [ ] Làm **hộp thoại** hiện chữ khi nhấn nút tương tác
-- [ ] Thêm **quái** đi tuần theo đường có sẵn
-- [ ] Máu, sát thương, màn hình game over
+1. Mở `scenes/main.tscn`
+2. Chọn node `Ground` (hoặc `Blocking`) ở khung Scene bên trái
+3. Khung **TileMap** hiện ra ở dưới màn hình — chọn một ô tem trong đó
+4. Bấm chuột trái lên bản đồ để vẽ, **chuột phải để xoá**
 
-### Tuần 7–8: Đóng gói
-- [ ] Menu chính + nút thoát
-- [ ] Lưu/tải game (`FileAccess` + JSON)
-- [ ] Âm thanh (`AudioStreamPlayer`)
-- [ ] Export ra PC và Android (mục 7)
+Phím tắt hữu ích khi vẽ: `Ctrl+Z` hoàn tác, giữ `Shift` kéo để vẽ đường thẳng,
+`R` chọn vùng chữ nhật, `B` đổ màu cả vùng.
 
-> **Lời khuyên quan trọng:** game đầu tay nên **nhỏ đến mức buồn cười** — 1 căn phòng,
-> 1 NPC, 1 con quái, 5 phút chơi. Game đầu tiên là để *học cách hoàn thành một game*,
-> không phải để hay. Hầu hết người mới bỏ cuộc vì bắt đầu bằng một dự án quá lớn.
+> **Quan trọng:** vẽ tường vào lớp `Blocking`, không phải `Ground`. Vẽ nhầm lớp
+> thì tường vẫn hiện ra nhưng nhân vật đi xuyên qua.
+
+Danh sách tile hiện có và tile nào chặn đường: xem `DESIGN.md` mục 6.
+
+## 5b. Lộ trình
+
+Lộ trình chi tiết nằm ở **`DESIGN.md` mục 8** — giữ ở một chỗ duy nhất để hai
+file không mâu thuẫn nhau.
+
+Học Godot chính thức:
+https://docs.godotengine.org/en/stable/getting_started/step_by_step/
+
+> **Lời khuyên quan trọng:** game đầu tay nên **nhỏ đến mức buồn cười**. Game đầu
+> tiên là để *học cách hoàn thành một game*, không phải để hay. Hầu hết người mới
+> bỏ cuộc vì bắt đầu bằng một dự án quá lớn.
 
 ---
 

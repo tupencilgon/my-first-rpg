@@ -49,7 +49,15 @@ Tóm tắt: top-down RPG, chiến đấu cận chiến, trang bị hiện lên n
 **sprite phân lớp** (Body / Outfit / Helmet / Weapon, mỗi lớp 1 file PNG 128×128
 cùng bố cục 4×4, cùng chỉ số frame). Demo gồm 1 làng + 1 hang động.
 
-Ý tưởng mới ngoài phạm vi demo → ghi vào mục 6 của `DESIGN.md`, không làm ngay.
+**Bản 1 KHÔNG có chiến đấu** — chỉ khám phá, NPC, hội thoại, nhặt đồ. Đừng đề xuất
+quái/máu/sát thương cho bản này; chúng thuộc bản 2.
+
+Ý tưởng mới ngoài phạm vi demo → ghi vào mục 7 của `DESIGN.md`, không làm ngay.
+
+Bản đồ vẽ bằng 2 node TileMapLayer trong `main.tscn`: `Ground` (đi qua được) và
+`Blocking` (chặn đường). Bộ tile ở `assets/tiles/terrain.tres`.
+KHÔNG viết script sinh lại bản đồ — người dùng vẽ tay trong editor, chạy lại script
+sẽ xoá sạch công sức của họ.
 
 ## Quy ước kỹ thuật
 

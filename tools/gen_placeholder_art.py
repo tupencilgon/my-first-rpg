@@ -109,6 +109,30 @@ STONE = (128, 122, 138, 255)
 STONE_D = (92, 88, 104, 255)
 MORTAR = (74, 70, 86, 255)
 
+DIRT_L = (172, 136, 98, 255)
+DIRT = (146, 110, 74, 255)
+DIRT_D = (116, 86, 56, 255)
+
+SLAB_L = (188, 182, 174, 255)
+SLAB = (156, 150, 142, 255)
+SLAB_D = (118, 112, 106, 255)
+
+WOOD_L = (172, 126, 80, 255)
+WOOD = (140, 98, 60, 255)
+WOOD_D = (104, 70, 42, 255)
+
+WATER_L = (108, 176, 216, 255)
+WATER = (62, 126, 182, 255)
+WATER_D = (40, 92, 142, 255)
+
+CAVE_L = (112, 106, 116, 255)
+CAVE = (86, 82, 92, 255)
+CAVE_D = (60, 56, 66, 255)
+
+CAVEW_L = (86, 80, 94, 255)
+CAVEW = (58, 54, 66, 255)
+CAVEW_D = (36, 33, 42, 255)
+
 
 def palette(light, mid, dark):
     """Gom 3 sac do cua cung mot chat lieu thanh 1 bo mau."""
@@ -502,6 +526,125 @@ def build_wall():
     return px
 
 
+def _speckle(px, pts, color, size=1):
+    """Rac cac dom nho len tile. Dung modulo de khong bi dut o mep tile."""
+    for x, y in pts:
+        for dy in range(size):
+            for dx in range(size):
+                dot(px, (x + dx) % FRAME, (y + dy) % FRAME, color)
+
+
+def build_dirt():
+    """Duong dat 32x32."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, DIRT)
+    _speckle(px, [(4, 3), (15, 8), (26, 5), (9, 17), (21, 21), (2, 28),
+                  (30, 26), (12, 30), (18, 13)], DIRT_D, size=2)
+    _speckle(px, [(8, 9), (22, 2), (29, 15), (5, 22), (17, 26), (25, 30),
+                  (13, 4), (1, 12)], DIRT_L)
+    return px
+
+
+def build_stone_floor():
+    """San da lat 32x32: 4 vien vuong 16x16 xep thang hang (khong so le).
+
+    Co tinh xep thang hang de phan biet voi tile TUONG - tuong xep so le.
+    """
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, SLAB)
+    for (y0, y1) in ((0, 15), (16, 31)):
+        for (x0, x1) in ((0, 15), (16, 31)):
+            rect(px, x0, y0, x1, y0, SLAB_L)      # canh tren sang
+            rect(px, x0, y1, x1, y1, SLAB_D)      # canh duoi toi
+            rect(px, x1, y0, x1, y1, SLAB_D)      # mach doc
+    _speckle(px, [(5, 6), (21, 9), (10, 24), (26, 20)], SLAB_D)
+    return px
+
+
+def build_wood_floor():
+    """San go 32x32: 4 tam van ngang, moi tam cao 8px, moi noi le nhau."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, WOOD)
+    for i, y0 in enumerate((0, 8, 16, 24)):
+        y1 = y0 + 7
+        rect(px, 0, y0, 31, y0, WOOD_L)           # canh tren tam van
+        rect(px, 0, y1, 31, y1, WOOD_D)           # khe giua hai tam
+        seam = (i * 11 + 5) % 32                  # moi noi le nhau tung tam
+        rect(px, seam, y0, seam, y1 - 1, WOOD_D)
+        rect(px, (seam + 9) % 32, y0 + 3, (seam + 14) % 32, y0 + 3, WOOD_D)  # van go
+    return px
+
+
+def build_water():
+    """Nuoc 32x32. Tile nay CO va cham - nguoi choi khong loi qua duoc."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, WATER)
+    for (x, y, w) in ((3, 4, 6), (18, 7, 5), (26, 13, 4), (8, 16, 7),
+                      (21, 22, 6), (2, 27, 5), (14, 29, 4)):
+        for i in range(w):
+            dot(px, (x + i) % 32, y, WATER_L)
+            dot(px, (x + i) % 32, (y + 1) % 32, WATER_D)
+    _speckle(px, [(12, 11), (29, 20), (6, 24)], WATER_L)
+    return px
+
+
+def build_cave_floor():
+    """San hang 32x32: da vun toi mau."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, CAVE)
+    _speckle(px, [(6, 5), (19, 3), (27, 11), (3, 15), (14, 18), (24, 24),
+                  (10, 28), (30, 30), (17, 9)], CAVE_D, size=2)
+    _speckle(px, [(11, 7), (22, 16), (5, 26), (28, 5), (16, 23)], CAVE_L)
+    return px
+
+
+def build_cave_wall():
+    """Vach hang 32x32: khoi da tho, khong theo hang loi nhu tuong xay."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, CAVEW)
+    # Vai khoi da to, canh tren sang canh duoi toi cho ra khoi.
+    for (x0, y0, x1, y1) in ((0, 0, 13, 10), (14, 0, 31, 13),
+                             (0, 11, 10, 22), (11, 14, 31, 24),
+                             (0, 23, 16, 31), (17, 25, 31, 31)):
+        rect(px, x0, y0, x1, y0, CAVEW_L)
+        rect(px, x0, y1, x1, y1, CAVEW_D)
+        rect(px, x1, y0, x1, y1, CAVEW_D)
+    _speckle(px, [(5, 4), (20, 6), (25, 18), (7, 27)], CAVEW_D)
+    return px
+
+
+# ---------------------------------------------------------------- atlas tile
+#
+# TAT CA tile nam chung trong MOT file anh goi la "atlas". TileSet cua Godot
+# cat file nay thanh luoi 32x32 va danh so o theo toa do (cot, hang).
+#
+# Toa do nay PHAI khop voi file assets/tiles/terrain.tres. Doi thu tu o day
+# ma quen sua ben do la ban do se hien sai tile.
+ATLAS_COLS = 4
+ATLAS_ROWS = 2
+ATLAS = [
+    # (cot, hang, ten, ham ve, co va cham khong)
+    (0, 0, "co",          build_floor,       False),
+    (1, 0, "duong dat",   build_dirt,        False),
+    (2, 0, "san da",      build_stone_floor, False),
+    (3, 0, "san go",      build_wood_floor,  False),
+    (0, 1, "nuoc",        build_water,       True),
+    (1, 1, "tuong da",    build_wall,        True),
+    (2, 1, "san hang",    build_cave_floor,  False),
+    (3, 1, "vach hang",   build_cave_wall,   True),
+]
+
+
+def build_terrain_atlas():
+    atlas = blank(FRAME * ATLAS_COLS, FRAME * ATLAS_ROWS)
+    for (cx, cy, _name, fn, _solid) in ATLAS:
+        tile = fn()
+        for y in range(FRAME):
+            for x in range(FRAME):
+                atlas[cy * FRAME + y][cx * FRAME + x] = tile[y][x]
+    return atlas
+
+
 # ---------------------------------------------------------------- main
 SPRITES = "assets/sprites"
 TILES = "assets/tiles"
@@ -522,8 +665,9 @@ def main():
     for rel, fn in layers.items():
         write_png(os.path.join(HERE, *rel.split("/")), FRAME * 4, FRAME * 4, build_sheet(fn))
 
-    write_png(os.path.join(HERE, *f"{TILES}/floor.png".split("/")), FRAME, FRAME, build_floor())
-    write_png(os.path.join(HERE, *f"{TILES}/wall.png".split("/")), FRAME, FRAME, build_wall())
+    write_png(os.path.join(HERE, *f"{TILES}/terrain.png".split("/")),
+              FRAME * ATLAS_COLS, FRAME * ATLAS_ROWS, build_terrain_atlas())
+    print("   (atlas: " + ", ".join("%d:%d %s" % (c, r, n) for c, r, n, _f, _s in ATLAS) + ")")
     print("Xong.")
 
 
