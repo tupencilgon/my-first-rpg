@@ -286,8 +286,13 @@ def _legs(px, d, frame, pal_upper, pal_lower, boots=True):
 def layer_body(d, frame, female=False):
     """Than the: da, toc, mat, do lot. Lop duy nhat co vien day du.
 
-    Ban nam va ban nu dung CHUNG dang nguoi - chi khac do dai toc va mat.
-    Nho vay moi bo do chi phai ve mot lan cho ca hai.
+    Tham so `female` hien KHONG duoc dung: cot truyen chot nhan vat chinh la
+    Kael (nam), nen chi sinh ra body_male.png. Giu lai doan code nay vi neu
+    sau nay them nhan vat nu thi chi can bat lai mot dong o ham main().
+
+    QUAN TRONG neu sau nay bat lai: ban nam va ban nu phai dung CHUNG dang
+    nguoi, chi khac toc va mat. Neu dang nguoi khac nhau thi moi bo do va moi
+    cai mu deu phai ve hai lan - nhan doi khoi luong art trang bi, vinh vien.
     """
     g = GEOM[d]
     px = blank(FRAME, FRAME)
@@ -654,8 +659,9 @@ def main():
     print("Dang tao art placeholder (luoi 32x32, sprite phan lop)...")
 
     layers = {
+        # Nhan vat chinh la Kael (nam). Muon them ban nu thi bo dau ; o dong duoi.
+        # f"{SPRITES}/body_female.png":  lambda d, f: layer_body(d, f, female=True),
         f"{SPRITES}/body_male.png":      lambda d, f: layer_body(d, f, female=False),
-        f"{SPRITES}/body_female.png":    lambda d, f: layer_body(d, f, female=True),
         f"{SPRITES}/outfit_cloth.png":   lambda d, f: layer_outfit(d, f, OUTFIT_CLOTH),
         f"{SPRITES}/outfit_leather.png": lambda d, f: layer_outfit(d, f, OUTFIT_LEATHER),
         f"{SPRITES}/helmet_iron.png":    lambda d, f: layer_helmet(d, f, HELMET_IRON),

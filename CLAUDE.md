@@ -45,14 +45,17 @@ Người dùng **chưa từng lập trình bao giờ** và trao đổi bằng **
 ## Thiết kế game
 
 Các quyết định đã chốt nằm trong `DESIGN.md` — đọc trước khi đề xuất tính năng hay art.
-Tóm tắt: top-down RPG, chiến đấu cận chiến, trang bị hiện lên ngoại hình bằng
+Tóm tắt: top-down RPG. Nhân vật chính **Kael (nam, cố định)**, làng **Aster**, mẹ **Elara**.
+Trang bị hiện lên ngoại hình bằng
 **sprite phân lớp** (Body / Outfit / Helmet / Weapon, mỗi lớp 1 file PNG 128×128
 cùng bố cục 4×4, cùng chỉ số frame). Demo gồm 1 làng + 1 hang động.
 
-**Bản 1 KHÔNG có chiến đấu** — chỉ khám phá, NPC, hội thoại, nhặt đồ. Đừng đề xuất
-quái/máu/sát thương cho bản này; chúng thuộc bản 2.
+**Demo KHÔNG có chiến đấu** — là mục 2+3+5 của Chương 0: Kael tỉnh dậy → về làng cháy →
+đào bới tìm mẹ và em → gặp Edren → hôm sau chỉ còn chiếc ghế trống → nghĩa trang. ~15 phút.
+Đừng đề xuất quái/máu/sát thương/hầm mỏ cho demo; chúng ở ngoài phạm vi.
 
-Ý tưởng mới ngoài phạm vi demo → ghi vào mục 7 của `DESIGN.md`, không làm ngay.
+Ý tưởng mới ngoài phạm vi demo → ghi vào mục 2 của `DESIGN.md` (phần "chưa có"), không làm ngay.
+Cốt truyện đầy đủ ở `docs/cot-truyen/` — đọc trước khi bàn nội dung.
 
 Bản đồ vẽ bằng 2 node TileMapLayer trong `main.tscn`: `Ground` (đi qua được) và
 `Blocking` (chặn đường). Bộ tile ở `assets/tiles/terrain.tres`.

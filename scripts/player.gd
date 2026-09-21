@@ -33,10 +33,7 @@ const DIR_RIGHT := 3
 # Chuoi rong "" nghia la khong mac gi (lop do se bi an di).
 # Day chi la ban tam de thu nghiem. Sau nay se thay bang he thong tui do
 # doc du lieu tu file Resource (.tres), khong viet cung trong code nhu the nay.
-const BODIES: Array[String] = [
-	"res://assets/sprites/body_male.png",
-	"res://assets/sprites/body_female.png",
-]
+const BODY := "res://assets/sprites/body_male.png"
 const OUTFITS: Array[String] = [
 	"",
 	"res://assets/sprites/outfit_cloth.png",
@@ -55,7 +52,6 @@ var _facing: int = DIR_DOWN
 var _anim_time: float = 0.0
 var _joystick: Node = null
 
-var _body_index: int = 0
 var _outfit_index: int = 1
 var _helmet_index: int = 0
 var _weapon_index: int = 0
@@ -139,7 +135,7 @@ func _apply_frame() -> void:
 
 ## Nap dung anh cho tung lop theo trang bi hien tai.
 func _refresh_equipment() -> void:
-	_set_layer(_body, BODIES[_body_index])
+	_set_layer(_body, BODY)
 	_set_layer(_outfit, OUTFITS[_outfit_index])
 	_set_layer(_helmet, HELMETS[_helmet_index])
 	# Vu khi chi tuot ra khi dang chien dau.
@@ -162,14 +158,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	match event.keycode:
 		KEY_1:
-			_body_index = (_body_index + 1) % BODIES.size()
-		KEY_2:
 			_outfit_index = (_outfit_index + 1) % OUTFITS.size()
-		KEY_3:
+		KEY_2:
 			_helmet_index = (_helmet_index + 1) % HELMETS.size()
-		KEY_4:
+		KEY_3:
 			_weapon_index = (_weapon_index + 1) % WEAPONS.size()
-		KEY_5:
+		KEY_4:
 			_in_combat = not _in_combat
 		_:
 			return

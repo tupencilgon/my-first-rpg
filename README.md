@@ -42,8 +42,8 @@ godot -e --path .
 | Tay cầm | D-pad |
 | Điện thoại | Chạm & kéo ở **nửa trái màn hình** → joystick ảo hiện ra |
 
-Phím tạm để thử hệ thống trang bị phân lớp: `1` đổi nam/nữ, `2` đổi bộ đồ,
-`3` bật/tắt mũ, `4` đổi kiếm/cung, `5` vào/ra chế độ chiến đấu.
+Phím tạm để thử hệ thống trang bị phân lớp: `1` đổi bộ đồ, `2` bật/tắt mũ,
+`3` đổi kiếm/cung, `4` rút/cất vũ khí.
 
 Muốn thử joystick ảo trên PC: chọn node `UI/TouchJoystick` trong Godot, bật
 `Always Show` trong Inspector, rồi vào **Project → Project Settings → Input Devices →
@@ -67,8 +67,10 @@ my-first-rpg/
 │  ├─ sprites/*.png           các lớp sprite: body_*, outfit_*, helmet_*, weapon_*
 │  ├─ tiles/terrain.png       atlas: tất cả tile trong 1 ảnh (4 cột × 2 hàng)
 │  └─ tiles/terrain.tres      TileSet: cắt atlas thành lưới 32×32, khai báo va chạm
+├─ docs/cot-truyen/           cốt truyện (chương 0…)
 └─ tools/
-   └─ gen_placeholder_art.py  script Python tạo art tạm (xem mục 6)
+   ├─ gen_placeholder_art.py  script Python tạo art tạm (xem mục 6)
+   └─ check_asset.py          kiểm tra ảnh AI đã dùng được chưa
 ```
 
 **Cách sprite sheet hoạt động:** mỗi lớp là ảnh 128×128, chia thành lưới 4×4.
@@ -103,7 +105,7 @@ Danh sách tile hiện có và tile nào chặn đường: xem `DESIGN.md` mục
 
 ## 5b. Lộ trình
 
-Lộ trình chi tiết nằm ở **`DESIGN.md` mục 8** — giữ ở một chỗ duy nhất để hai
+Lộ trình chi tiết nằm ở **`DESIGN.md` mục 7** — giữ ở một chỗ duy nhất để hai
 file không mâu thuẫn nhau.
 
 Học Godot chính thức:
