@@ -72,6 +72,18 @@ sẽ xoá sạch công sức của họ.
 Muốn thêm node thì dùng Edit chèn vào, đừng dùng Write. (Claude đã mắc lỗi này
 một lần và phải lấy lại `tile_map_data` từ git.)
 
+## Art nhân vật hiện dùng
+
+`Body` của người chơi đang dùng `assets/sprites/kael_v02/kael_walk_v02.png` —
+sprite Kael do AI vẽ, **đã mặc sẵn quần áo**. Vì vậy lớp `Outfit` và `Helmet`
+để ẩn (`_outfit_index = 0`).
+
+Hệ thống phân lớp vẫn còn trong code. Demo không đổi trang bị nên chưa cần.
+Khi nào làm bản có trang bị đổi được thì phải **tách sprite này thành hai lớp**
+Body (người) và Outfit (quần áo) — đừng chồng lớp Outfit cũ lên nó.
+
+Placeholder cũ giữ ở `assets/sprites/body_male.png` để đối chiếu khi tách lớp.
+
 ## Vật thể (prop)
 
 Vật thể lớn — nhà, cây, giếng, bia mộ — là **PNG riêng**, không ghép từ tile.

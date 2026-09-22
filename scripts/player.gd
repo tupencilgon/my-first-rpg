@@ -33,7 +33,16 @@ const DIR_RIGHT := 3
 # Chuoi rong "" nghia la khong mac gi (lop do se bi an di).
 # Day chi la ban tam de thu nghiem. Sau nay se thay bang he thong tui do
 # doc du lieu tu file Resource (.tres), khong viet cung trong code nhu the nay.
-const BODY := "res://assets/sprites/body_male.png"
+## Sprite Kael do AI ve, da mac san quan ao - KHONG chong lop Outfit len tren.
+## Vi vay `_outfit_index` mac dinh la 0 (khong mac gi).
+##
+## He thong phan lop van con nguyen o day. Demo khong co doi trang bi nen chua
+## can den no; khi nao lam ban co chien dau va trang bi doi duoc thi phai tach
+## sprite nay thanh hai lop Body (nguoi tran) va Outfit (quan ao) rieng.
+const BODY := "res://assets/sprites/kael_v02/kael_walk_v02.png"
+
+## Sprite placeholder cu, giu lai de doi chieu khi tach lop.
+const BODY_PLACEHOLDER := "res://assets/sprites/body_male.png"
 const OUTFITS: Array[String] = [
 	"",
 	"res://assets/sprites/outfit_cloth.png",
@@ -52,7 +61,7 @@ var _facing: int = DIR_DOWN
 var _anim_time: float = 0.0
 var _joystick: Node = null
 
-var _outfit_index: int = 1
+var _outfit_index: int = 0
 var _helmet_index: int = 0
 var _weapon_index: int = 0
 var _in_combat: bool = false
