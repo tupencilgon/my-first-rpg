@@ -1,0 +1,76 @@
+; BAN THU huong "gia pixel art" - chay rieng, KHONG anh huong scenes/main.tscn.
+;
+; Mo scene nay roi nhan F6 de chay thu (F5 van chay ban chinh).
+;
+; Khac biet co ban so voi ban chinh:
+;   - Nen ban do la MOT anh ve san (assets/hd/aster_ground.png), khong phai
+;     TileMap. Khong can cat thanh tile, khong can convert gi.
+;   - Nha chay la anh cat thang tu bang ref cua nguoi dung, 391x418.
+;   - Nhan vat cao 126px, art nguyen goc tu bo turnaround.
+;   - Do phan giai man hinh dat o 1920x1080 ngay trong script, va KHONG dung
+;     phong to theo so nguyen - do la diem khac biet ky thuat lon nhat.
+;
+; Va cham: chi co vien ngoai ban do va ngoi nha. Khong co va cham theo tile
+; nua - phai tu dat, do la cai gia phai tra cho huong nay.
+
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/prototype_hd.gd" id="1_proto"]
+[ext_resource type="Texture2D" path="res://assets/hd/aster_ground.png" id="2_ground"]
+[ext_resource type="Texture2D" path="res://assets/hd/burnt_house_hd.png" id="3_house"]
+[ext_resource type="PackedScene" path="res://scenes/player_hd.tscn" id="4_player"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bound_h"]
+size = Vector2(3762, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bound_v"]
+size = Vector2(64, 3762)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
+size = Vector2(330, 250)
+
+[node name="PrototypeHD" type="Node2D"]
+script = ExtResource("1_proto")
+
+[node name="Ground" type="Sprite2D" parent="."]
+texture_filter = 1
+centered = false
+scale = Vector2(3, 3)
+texture = ExtResource("2_ground")
+
+[node name="Bounds" type="StaticBody2D" parent="."]
+
+[node name="Top" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(1881, -32)
+shape = SubResource("RectangleShape2D_bound_h")
+
+[node name="Bottom" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(1881, 3794)
+shape = SubResource("RectangleShape2D_bound_h")
+
+[node name="Left" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(-32, 1881)
+shape = SubResource("RectangleShape2D_bound_v")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(3794, 1881)
+shape = SubResource("RectangleShape2D_bound_v")
+
+[node name="World" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="World" instance=ExtResource("4_player")]
+position = Vector2(1880, 2200)
+
+[node name="BurntHouse" type="StaticBody2D" parent="World"]
+position = Vector2(1500, 1500)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/BurntHouse"]
+texture_filter = 1
+centered = false
+offset = Vector2(-195, -418)
+texture = ExtResource("3_house")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/BurntHouse"]
+position = Vector2(0, -125)
+shape = SubResource("RectangleShape2D_house")

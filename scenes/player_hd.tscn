@@ -1,0 +1,37 @@
+; Nhan vat cho ban thu "gia pixel art". Art nguyen goc tu bo turnaround,
+; cao 126px thay vi 32px.
+;
+; Sheet kael_hd.png: 512x136, mot hang bon cot (xuong, len, trai, phai).
+; Moi o 128x136, ban chan o hang 133.
+;
+; Goc toa do o CHAN nhan vat - cung quy uoc voi prop, de Y-sort so sanh dung.
+
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/player_hd.gd" id="1_player"]
+[ext_resource type="Texture2D" path="res://assets/hd/kael_hd.png" id="2_kael"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_feet"]
+radius = 26.0
+
+[node name="PlayerHD" type="CharacterBody2D"]
+script = ExtResource("1_player")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+offset = Vector2(0, -66)
+texture = ExtResource("2_kael")
+hframes = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -26)
+shape = SubResource("CircleShape2D_feet")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -60)
+limit_left = 0
+limit_top = 0
+limit_right = 3762
+limit_bottom = 3762
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
