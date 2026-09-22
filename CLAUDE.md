@@ -100,6 +100,18 @@ Mọi prop và người chơi phải là **con trực tiếp** của node `World
 (`y_sort_enabled = true`). Y-sort chỉ sắp xếp con trực tiếp; lồng thêm một lớp
 Node2D ở giữa là mất tác dụng.
 
+## Bẫy đã mắc — đừng lặp lại
+
+**PowerShell `Set-Content`/`Out-File -Encoding utf8` chèn BOM.** Godot không đọc
+được file `.tscn`/`.tres`/`.gd` có BOM (báo `Parse Error: Expected '['` ở dòng 1),
+và git commit message có BOM thì hiện ký tự rác. Luôn ghi bằng:
+
+```
+[System.IO.File]::WriteAllText($path, $text, (New-Object System.Text.UTF8Encoding $false))
+```
+
+**Đừng ghi đè trọn `main.tscn`** — xem mục bản đồ ở trên.
+
 ## Quy ước kỹ thuật
 
 - **GDScript thụt đầu dòng bằng TAB**, không dùng space (Godot báo lỗi nếu trộn lẫn)

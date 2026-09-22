@@ -39,7 +39,7 @@ const DIR_RIGHT := 3
 ## He thong phan lop van con nguyen o day. Demo khong co doi trang bi nen chua
 ## can den no; khi nao lam ban co chien dau va trang bi doi duoc thi phai tach
 ## sprite nay thanh hai lop Body (nguoi tran) va Outfit (quan ao) rieng.
-const BODY := "res://assets/sprites/kael_v02/kael_walk_v02.png"
+const BODY := "res://assets/sprites/kael_v03/kael_walk_v03.png"
 
 ## Sprite placeholder cu, giu lai de doi chieu khi tach lop.
 const BODY_PLACEHOLDER := "res://assets/sprites/body_male.png"

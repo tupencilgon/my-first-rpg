@@ -11,7 +11,7 @@
 [gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="Texture2D" path="res://assets/sprites/kael_v02/kael_walk_v02.png" id="2_body"]
+[ext_resource type="Texture2D" path="res://assets/sprites/kael_v03/kael_walk_v03.png" id="2_body"]
 [ext_resource type="Texture2D" path="res://assets/sprites/outfit_cloth.png" id="3_outfit"]
 [ext_resource type="Texture2D" path="res://assets/sprites/helmet_iron.png" id="4_helmet"]
 [ext_resource type="Texture2D" path="res://assets/sprites/weapon_sword.png" id="5_weapon"]
