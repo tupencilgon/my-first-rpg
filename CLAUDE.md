@@ -41,6 +41,11 @@ Người dùng **chưa từng lập trình bao giờ** và trao đổi bằng **
 - Chia việc thành bước nhỏ, mỗi bước phải chạy thử được ngay
 - Luôn tự kiểm chứng (chạy headless, chụp ảnh render) trước khi nói "xong"
 - Giữ phạm vi nhỏ — đây là game đầu tay, mục tiêu là *hoàn thành*, không phải *hoành tráng*
+- **KHÔNG đưa ước lượng thời gian** (bao nhiêu giờ / tuần / tháng / năm để làm xong).
+  Người dùng đã yêu cầu rõ. Claude viết 100% code, nên những con số đó không còn ý nghĩa.
+  Vẫn được nói một việc **phụ thuộc việc khác** hoặc **cần chia nhỏ**, nhưng nói bằng
+  thứ tự và số lượng công việc, không bằng thời gian.
+- Ước lượng khối lượng art thì đếm bằng **số ô sprite**, không đổi sang giờ vẽ
 
 ## Thiết kế game
 

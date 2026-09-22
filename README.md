@@ -65,7 +65,7 @@ my-first-rpg/
 │  └─ touch_joystick.gd       joystick ảo cho điện thoại
 ├─ assets/
 │  ├─ sprites/*.png           các lớp sprite: body_*, outfit_*, helmet_*, weapon_*
-│  ├─ tiles/terrain.png       atlas: tất cả tile trong 1 ảnh (4 cột × 2 hàng)
+│  ├─ tiles/terrain.png       atlas: tất cả tile trong 1 ảnh (4 cột × 4 hàng)
 │  └─ tiles/terrain.tres      TileSet: cắt atlas thành lưới 32×32, khai báo va chạm
 ├─ docs/cot-truyen/           cốt truyện (chương 0…)
 └─ tools/
@@ -85,8 +85,8 @@ Bản đồ nằm trong `scenes/main.tscn`, gồm **hai lớp**:
 
 | Lớp | Dùng cho |
 |---|---|
-| `Ground` | Cỏ, đường đất, sàn nhà — những thứ **đi qua được** |
-| `Blocking` | Tường, nước — những thứ **chặn đường** |
+| `Ground` | Cỏ, tro, đường, sàn nhà — những thứ **đi qua được** |
+| `Blocking` | Tường, nước, gỗ đổ sập, tán cây — những thứ **chặn đường** |
 
 Cách vẽ:
 

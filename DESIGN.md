@@ -24,11 +24,12 @@ hội thoại. Lớp `body_female` đã gỡ; code sinh art vẫn giữ (một d
 
 ## 2. Phạm vi demo — mục 2 + 3 + 5 của Chương 0
 
-Demo **không phải cả Chương 0**. Chương 0 như đã viết cần hệ thống ngày/thời
-gian, NPC đổi vị trí theo quest, hội thoại điều kiện, làng xây lại qua nhiều
-trạng thái, dungeon có boss — với người mới lập trình là 1,5–3 năm.
+Demo **không phải cả Chương 0**. Chương 0 như đã viết cần rất nhiều hệ thống
+xếp lớp lên nhau: ngày/thời gian, NPC đổi vị trí theo quest, hội thoại có điều
+kiện, làng xây lại qua nhiều trạng thái, dungeon có elite và boss. Làm tất cả
+cùng lúc thì không có thứ gì chạy được trọn vẹn để thử.
 
-Demo là một lát mỏng, **không có chiến đấu**, khoảng **15 phút**:
+Demo là một lát mỏng, **không có chiến đấu**, gồm đúng 10 cảnh:
 
 | # | Cảnh | Người chơi làm gì |
 |---|---|---|
@@ -110,8 +111,7 @@ khác màu — mà đổi màu một bộ đồ thì gần như miễn phí.
 ## 5. Art cần cho demo
 
 ### Đã có
-Kael (body + 2 bộ đồ + mũ), 8 tile nền (cỏ, đường đất, sàn đá, sàn gỗ, nước,
-tường đá, sàn hang, vách hang).
+Kael (body + 2 bộ đồ + mũ) và **16 tile nền** — xem bảng đầy đủ ở mục 6.
 
 ### Còn thiếu
 
@@ -119,8 +119,8 @@ tường đá, sàn hang, vách hang).
 |---|---|
 | Bộ đồ "quần áo cháy xém" cho Kael | 16 |
 | 5 NPC = 5 bộ đồ khác màu (dùng lại Body) | 80 |
-| Tile làng cháy (nhà cháy đen, tro, gỗ cháy, đường đầy mảnh vỡ) | ~15 |
-| Tile nghĩa trang + rừng + suối | ~12 |
+| ~~Tile làng cháy~~ ✅ | 4 |
+| ~~Tile nghĩa trang + rừng~~ ✅ | 4 |
 | Vật thể (đống đổ nát, ghế trống, bia mộ, khăn, đồ chơi gỗ) | ~10 |
 | Khung hội thoại + icon vật phẩm | ~8 |
 | | **~140** |
@@ -152,6 +152,8 @@ chúng không cần nhất quán qua nhiều frame.
 Tất cả tile nằm chung trong **một** file `assets/tiles/terrain.png` (*atlas*),
 được `assets/tiles/terrain.tres` (TileSet) cắt thành lưới 32×32.
 
+**Làng bình thường + hang động**
+
 | Toạ độ | Tile | Chặn đường? |
 |---|---|---|
 | 0:0 | Cỏ | Không |
@@ -162,6 +164,19 @@ Tất cả tile nằm chung trong **một** file `assets/tiles/terrain.png` (*at
 | 1:1 | Tường đá | **Có** |
 | 2:1 | Sàn hang | Không |
 | 3:1 | Vách hang | **Có** |
+
+**Aster sau đêm cháy** — dùng để vẽ bản đồ demo
+
+| Toạ độ | Tile | Chặn đường? |
+|---|---|---|
+| 0:2 | Tro tàn | Không |
+| 1:2 | Cỏ cháy khô | Không |
+| 2:2 | Sàn gỗ cháy | Không |
+| 3:2 | Đường đầy mảnh vỡ | Không |
+| 0:3 | Gỗ cháy đổ sập | **Có** |
+| 1:3 | Tán cây rậm | **Có** |
+| 2:3 | Đất nghĩa trang | Không |
+| 3:3 | Sỏi đá | Không |
 
 Thêm tile mới: thêm một dòng vào biến `ATLAS` trong
 `tools/gen_placeholder_art.py`, chạy lại script, rồi khai báo ô mới trong
@@ -174,7 +189,7 @@ Thêm tile mới: thêm một dòng vào biến `ATLAS` trong
 1. ~~Sprite phân lớp~~ ✅
 2. ~~TileSet + TileMapLayer~~ ✅
 3. ~~Công cụ kiểm tra asset AI~~ ✅
-4. **Tile làng cháy** — cần trước khi vẽ được Aster
+4. ~~Tile làng cháy~~ ✅ (8 tile, xem mục 6)
 5. **Vẽ bản đồ Aster** ← việc của bạn trong editor
 6. Vùng tương tác + phím tương tác
 7. Hộp thoại

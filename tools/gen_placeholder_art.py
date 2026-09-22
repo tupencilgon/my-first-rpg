@@ -133,6 +133,27 @@ CAVEW_L = (86, 80, 94, 255)
 CAVEW = (58, 54, 66, 255)
 CAVEW_D = (36, 33, 42, 255)
 
+# --- Mau cho Aster sau dem chay ---
+ASH_L = (152, 146, 142, 255)
+ASH = (120, 114, 110, 255)
+ASH_D = (88, 83, 80, 255)
+
+CHAR_L = (76, 64, 58, 255)          # go chay den
+CHAR = (50, 42, 38, 255)
+CHAR_D = (30, 25, 23, 255)
+
+BGRASS_L = (118, 110, 82, 255)      # co chay kho, vang uc
+BGRASS = (92, 86, 64, 255)
+BGRASS_D = (66, 62, 46, 255)
+
+LEAF_L = (92, 138, 74, 255)         # tan cay
+LEAF = (58, 100, 52, 255)
+LEAF_D = (36, 70, 38, 255)
+
+GDIRT_L = (112, 94, 72, 255)        # dat nghia trang
+GDIRT = (86, 70, 54, 255)
+GDIRT_D = (60, 48, 36, 255)
+
 
 def palette(light, mid, dark):
     """Gom 3 sac do cua cung mot chat lieu thanh 1 bo mau."""
@@ -618,6 +639,135 @@ def build_cave_wall():
     return px
 
 
+# ------------------------------------------------- tile Aster sau dem chay
+#
+# Aster trong demo la ngoi lang VUA CHAY. Nhung tile duoi day dung de ve no.
+# Tat ca deu lien mach khi lap lai, va deu tranh nhet vat the de nhan ra vao
+# tile nen (xem chu thich o build_floor).
+
+def build_ash():
+    """Tro tan 32x32 - phu nhung cho nha da chay rui."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, ASH)
+    _speckle(px, [(3, 6), (14, 2), (25, 9), (8, 18), (20, 15), (29, 22),
+                  (5, 27), (17, 29), (11, 12)], ASH_D, size=2)
+    _speckle(px, [(9, 4), (21, 7), (2, 14), (27, 17), (15, 22), (6, 31),
+                  (31, 3), (13, 25)], ASH_L)
+    _speckle(px, [(19, 5), (7, 21), (26, 28)], CHAR_D)   # vai manh than con lai
+    return px
+
+
+def build_burnt_grass():
+    """Co chay kho 32x32 - vanh ngoai khu chay, vai bui co con song."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, BGRASS)
+    _speckle(px, [(4, 3), (16, 9), (27, 6), (9, 16), (21, 20), (2, 26),
+                  (30, 29), (13, 30), (24, 13)], BGRASS_D, size=2)
+    _speckle(px, [(11, 5), (23, 3), (6, 11), (29, 18), (17, 24), (3, 20)], BGRASS_L)
+    _speckle(px, [(8, 8), (25, 25), (18, 14)], CHAR_D)   # vet chay den
+    _speckle(px, [(14, 18), (28, 10)], GRASS_D)          # co con song sot
+    return px
+
+
+def build_burnt_wood_floor():
+    """San go da chay 32x32 - van con nhan ra la san nha, nhung den thui."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, CHAR)
+
+    # Chi ke duong ngang cho ra tam van. KHONG ke duong doc: them mach doc la
+    # tile bien thanh tuong gach ngay, khong con doc ra la san go nua.
+    for y0 in (0, 8, 16, 24):
+        rect(px, 0, y0, 31, y0, CHAR_L)          # canh tren tam van
+        rect(px, 0, y0 + 7, 31, y0 + 7, CHAR_D)  # khe giua hai tam
+
+    # Vet nut chay doc theo tho go - ngan, nam trong long tam van.
+    for (x, y, w) in ((4, 3, 9), (18, 11, 7), (9, 19, 11), (23, 27, 6),
+                      (28, 4, 4), (13, 12, 5)):
+        for i in range(w):
+            dot(px, (x + i) % 32, y, CHAR_D)
+
+    # Vai cho than con do am.
+    _speckle(px, [(7, 5), (21, 21), (15, 29)], CHAR_L)
+    return px
+
+
+def build_debris_road():
+    """Duong dat day manh vo 32x32 - go chay, da, do dac cua dan lang."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, DIRT)
+    _speckle(px, [(5, 4), (18, 11), (28, 7), (10, 21), (23, 26), (2, 29)],
+             DIRT_D, size=2)
+    # Manh go chay: nhung thanh ngan nam ngang.
+    for (x, y, w) in ((3, 9, 7), (20, 17, 6), (11, 28, 5), (25, 2, 5)):
+        for i in range(w):
+            dot(px, (x + i) % 32, y, CHAR)
+            dot(px, (x + i) % 32, (y + 1) % 32, CHAR_D)
+    # Da va do vo. Dung bang mau ASH (xam am) chu khong dung STONE_L - xam
+    # lanh cua STONE_L noi len xanh lo giua nen nau, nhin ra ngay la lac mau.
+    _speckle(px, [(15, 6), (7, 24), (29, 14)], ASH_D, size=2)
+    _speckle(px, [(16, 6), (8, 24), (12, 15), (26, 22)], ASH_L)
+    return px
+
+
+def build_charred_beam():
+    """Dong go chay do sap 32x32. Tile nay CHAN DUONG.
+
+    Dung cho khung nha da sap. Cac thanh dam keo het chieu rong/cao nen khi
+    lap lai chung noi lien thanh mot dong do nat lien mach.
+    """
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, ASH_D)
+    for y0 in (6, 20):                            # hai dam ngang
+        rect(px, 0, y0, 31, y0 + 4, CHAR)
+        rect(px, 0, y0, 31, y0, CHAR_L)
+        rect(px, 0, y0 + 4, 31, y0 + 4, CHAR_D)
+    rect(px, 12, 0, 16, 31, CHAR)                 # mot dam doc de len
+    rect(px, 12, 0, 12, 31, CHAR_L)
+    rect(px, 16, 0, 16, 31, CHAR_D)
+    _speckle(px, [(4, 14), (24, 27), (8, 2)], ASH_L)
+    return px
+
+
+def build_tree_canopy():
+    """Tan cay ram 32x32. Tile nay CHAN DUONG - dung lam bia rung."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, LEAF)
+    # Nhung cum la: dam toi lam chieu sau, dam sang lam anh nang.
+    for (x, y) in ((3, 5), (17, 2), (26, 11), (8, 15), (21, 22), (1, 25),
+                   (30, 28), (13, 29), (11, 8)):
+        for dy in range(3):
+            for dx in range(4):
+                dot(px, (x + dx) % 32, (y + dy) % 32, LEAF_D)
+    for (x, y) in ((7, 3), (22, 7), (2, 12), (28, 19), (15, 17), (10, 25),
+                   (25, 30), (19, 12)):
+        for dx in range(2):
+            dot(px, (x + dx) % 32, y, LEAF_L)
+    return px
+
+
+def build_graveyard_dirt():
+    """Dat nghia trang 32x32 - dat nen chat, co thua."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, GDIRT)
+    _speckle(px, [(4, 7), (15, 3), (26, 12), (9, 19), (22, 24), (2, 28),
+                  (30, 20), (18, 30)], GDIRT_D, size=2)
+    _speckle(px, [(11, 9), (24, 5), (6, 16), (29, 26), (16, 21)], GDIRT_L)
+    _speckle(px, [(13, 13), (27, 31), (5, 23)], BGRASS_D)   # bui co thua
+    return px
+
+
+def build_gravel():
+    """Soi da vun 32x32 - loi di trong nghia trang, quanh gieng."""
+    px = blank(FRAME, FRAME)
+    rect(px, 0, 0, 31, 31, STONE)
+    _speckle(px, [(3, 3), (12, 7), (21, 2), (28, 9), (6, 13), (17, 16),
+                  (25, 20), (2, 22), (14, 26), (30, 29), (9, 30), (19, 11)],
+             STONE_D, size=2)
+    _speckle(px, [(8, 5), (23, 13), (4, 18), (16, 4), (27, 25), (11, 22),
+                  (31, 15), (20, 30)], STONE_L)
+    return px
+
+
 # ---------------------------------------------------------------- atlas tile
 #
 # TAT CA tile nam chung trong MOT file anh goi la "atlas". TileSet cua Godot
@@ -626,17 +776,27 @@ def build_cave_wall():
 # Toa do nay PHAI khop voi file assets/tiles/terrain.tres. Doi thu tu o day
 # ma quen sua ben do la ban do se hien sai tile.
 ATLAS_COLS = 4
-ATLAS_ROWS = 2
+ATLAS_ROWS = 4
 ATLAS = [
     # (cot, hang, ten, ham ve, co va cham khong)
-    (0, 0, "co",          build_floor,       False),
-    (1, 0, "duong dat",   build_dirt,        False),
-    (2, 0, "san da",      build_stone_floor, False),
-    (3, 0, "san go",      build_wood_floor,  False),
-    (0, 1, "nuoc",        build_water,       True),
-    (1, 1, "tuong da",    build_wall,        True),
-    (2, 1, "san hang",    build_cave_floor,  False),
-    (3, 1, "vach hang",   build_cave_wall,   True),
+    # --- hang 0-1: lang binh thuong + hang dong ---
+    (0, 0, "co",             build_floor,           False),
+    (1, 0, "duong dat",      build_dirt,            False),
+    (2, 0, "san da",         build_stone_floor,     False),
+    (3, 0, "san go",         build_wood_floor,      False),
+    (0, 1, "nuoc",           build_water,           True),
+    (1, 1, "tuong da",       build_wall,            True),
+    (2, 1, "san hang",       build_cave_floor,      False),
+    (3, 1, "vach hang",      build_cave_wall,       True),
+    # --- hang 2-3: Aster sau dem chay ---
+    (0, 2, "tro tan",        build_ash,             False),
+    (1, 2, "co chay",        build_burnt_grass,     False),
+    (2, 2, "san go chay",    build_burnt_wood_floor, False),
+    (3, 2, "duong manh vo",  build_debris_road,     False),
+    (0, 3, "go chay do sap", build_charred_beam,    True),
+    (1, 3, "tan cay",        build_tree_canopy,     True),
+    (2, 3, "dat nghia trang", build_graveyard_dirt, False),
+    (3, 3, "soi da",         build_gravel,          False),
 ]
 
 
