@@ -61,6 +61,7 @@ Mara, hệ thống ngày, làng xây lại, quest thu thập, rèn/nâng cấp, 
 | 1 | Di chuyển 4 hướng + va chạm | ✅ xong |
 | 2 | Sprite phân lớp | ✅ xong |
 | 3 | TileSet + TileMapLayer | ✅ xong |
+| 3b | Prop + Y-sort | ✅ xong |
 | 4 | Vùng tương tác (`Area2D`) + phím tương tác | chưa |
 | 5 | Hộp thoại (chữ hiện dần, bấm để tiếp) | chưa |
 | 6 | Hội thoại có lựa chọn | chưa |
@@ -121,6 +122,7 @@ Kael (body + 2 bộ đồ + mũ) và **16 tile nền** — xem bảng đầy đ�
 | 5 NPC = 5 bộ đồ khác màu (dùng lại Body) | 80 |
 | ~~Tile làng cháy~~ ✅ | 4 |
 | ~~Tile nghĩa trang + rừng~~ ✅ | 4 |
+| ~~Prop: cây, nhà cháy, bia mộ, ghế~~ ✅ | 4 prop |
 | Vật thể (đống đổ nát, ghế trống, bia mộ, khăn, đồ chơi gỗ) | ~10 |
 | Khung hội thoại + icon vật phẩm | ~8 |
 | | **~140** |
@@ -147,6 +149,41 @@ chúng không cần nhất quán qua nhiều frame.
 
 ---
 
+## 5b. Vật thể (prop) — ✅ ĐÃ DỰNG XONG
+
+Không phải mọi thứ đều là tile. Một ngôi nhà hay một cái cây không ghép từ
+những viên 32px cho ra hình được.
+
+| | Tile | Prop |
+|---|---|---|
+| Là gì | Ô vuông 32×32 trong lưới | Một PNG riêng, kích thước bất kỳ |
+| Va chạm | Tự động theo TileSet | Tự vẽ trong scene của prop |
+| Đặt ở đâu | Chỉ đúng ô lưới | Bất kỳ toạ độ nào |
+| Dùng cho | Mặt đất, tường, nước | Nhà, cây, giếng, bia mộ, ghế |
+
+**Đây là chỗ art do AI tạo dùng được tốt nhất.** "Vẽ một ngôi nhà gỗ cháy rụi
+nhìn từ trên xuống" là việc AI làm ra được một ảnh dùng được ngay.
+
+Ảnh ở `assets/props/`, scene ở `scenes/props/`. Prop đã có: cây, nhà cháy,
+bia mộ, ghế gỗ.
+
+### Y-sort — nhân vật đi được ra sau vật thể
+
+Node `World` trong `main.tscn` bật `y_sort_enabled`. Nó sắp xếp thứ tự vẽ theo
+vị trí Y: ai ở phía dưới thì vẽ sau, tức là che người ở phía trên.
+
+Để so sánh đúng, **cả prop lẫn nhân vật đều lấy gốc toạ độ ở chân**. Prop đặt
+`offset = (-rộng/2, -cao)`, nhân vật đặt `offset = (0, -16)`. Nếu một bên lấy
+gốc ở giữa người thì hai bên lệch nhau 16 pixel và thứ tự vẽ sẽ sai ở khoảng
+cách gần.
+
+Mọi prop và nhân vật phải là **con trực tiếp** của `World`. Y-sort chỉ sắp xếp
+con trực tiếp; lồng thêm một lớp Node2D ở giữa là mất tác dụng.
+
+Vùng va chạm của prop chỉ bao quanh **phần chân** — tán cây và mái nhà thì
+người chơi đi dưới được.
+
+---
 ## 6. Bộ tile hiện có
 
 Tất cả tile nằm chung trong **một** file `assets/tiles/terrain.png` (*atlas*),
@@ -190,6 +227,7 @@ Thêm tile mới: thêm một dòng vào biến `ATLAS` trong
 2. ~~TileSet + TileMapLayer~~ ✅
 3. ~~Công cụ kiểm tra asset AI~~ ✅
 4. ~~Tile làng cháy~~ ✅ (8 tile, xem mục 6)
+4b. ~~Prop + Y-sort~~ ✅ (xem mục 5b)
 5. **Vẽ bản đồ Aster** ← việc của bạn trong editor
 6. Vùng tương tác + phím tương tác
 7. Hộp thoại

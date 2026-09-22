@@ -67,6 +67,27 @@ Bản đồ vẽ bằng 2 node TileMapLayer trong `main.tscn`: `Ground` (đi qua
 KHÔNG viết script sinh lại bản đồ — người dùng vẽ tay trong editor, chạy lại script
 sẽ xoá sạch công sức của họ.
 
+**KHÔNG ghi đè trọn file `main.tscn`.** Dữ liệu bản đồ nằm trong thuộc tính
+`tile_map_data` của hai node TileMapLayer — ghi đè cả file là xoá sạch bản đồ.
+Muốn thêm node thì dùng Edit chèn vào, đừng dùng Write. (Claude đã mắc lỗi này
+một lần và phải lấy lại `tile_map_data` từ git.)
+
+## Vật thể (prop)
+
+Vật thể lớn — nhà, cây, giếng, bia mộ — là **PNG riêng**, không ghép từ tile.
+Ảnh ở `assets/props/`, scene ở `scenes/props/`.
+
+Quy ước: **gốc toạ độ của prop nằm ở CHÂN nó** (đáy ảnh, giữa chiều ngang), nên
+Sprite2D đặt `offset = (-rộng/2, -cao)`. Nhân vật cũng lấy gốc ở chân
+(`offset = (0, -16)`). Hai bên phải cùng quy ước, nếu không Y-sort so sánh lệch.
+
+Vùng va chạm chỉ bao quanh **phần chân** — tán cây và mái nhà thì người chơi đi
+dưới được.
+
+Mọi prop và người chơi phải là **con trực tiếp** của node `World`
+(`y_sort_enabled = true`). Y-sort chỉ sắp xếp con trực tiếp; lồng thêm một lớp
+Node2D ở giữa là mất tác dụng.
+
 ## Quy ước kỹ thuật
 
 - **GDScript thụt đầu dòng bằng TAB**, không dùng space (Godot báo lỗi nếu trộn lẫn)

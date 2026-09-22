@@ -208,6 +208,16 @@ def add_outline(px, color=OUTLINE):
         px[y][x] = color
 
 
+def ellipse(px, cx, cy, rx, ry, color):
+    """Ve hinh elip dac. Dung cho tan cay, bui ram - nhung thu khong vuong."""
+    for y in range(int(cy - ry), int(cy + ry) + 1):
+        for x in range(int(cx - rx), int(cx + rx) + 1):
+            dx = (x - cx) / float(rx)
+            dy = (y - cy) / float(ry)
+            if dx * dx + dy * dy <= 1.0:
+                dot(px, x, y, color)
+
+
 def round_corners(px, x0, y0, x1, y1, size=2, top=True, bottom=True):
     """Cat goc cho khoi bot vuong.
 
@@ -553,11 +563,19 @@ def build_wall():
 
 
 def _speckle(px, pts, color, size=1):
-    """Rac cac dom nho len tile. Dung modulo de khong bi dut o mep tile."""
+    """Rac cac dom nho len anh.
+
+    Cuon toa do theo KICH THUOC THAT cua anh, khong phai theo FRAME. Dom nam
+    o mep tile se noi tiep sang mep doi dien -> tile van lien mach khi lap.
+
+    Truoc day ham nay cuon cung theo 32 (FRAME) nen khi dung cho prop 96x96
+    thi moi dom deu bi don ve goc trai-tren mot cach vo nghia.
+    """
+    h, w = len(px), len(px[0])
     for x, y in pts:
         for dy in range(size):
             for dx in range(size):
-                dot(px, (x + dx) % FRAME, (y + dy) % FRAME, color)
+                dot(px, (x + dx) % w, (y + dy) % h, color)
 
 
 def build_dirt():
@@ -768,6 +786,129 @@ def build_gravel():
     return px
 
 
+# ---------------------------------------------------------------- VAT THE (prop)
+#
+# Vat the KHONG phai tile. Khac nhau o cho:
+#
+#   Tile  = o vuong 32x32, nam trong luoi, va cham tu dong theo TileSet.
+#   Prop  = mot anh PNG rieng, kich thuoc bat ky, dat o dau cung duoc,
+#           va cham phai TU VE bang tay trong scene cua no.
+#
+# Vi sao can prop: mot ngoi nha chay hay mot cai cay khong the ghep tu nhung
+# vien 32px cho ra hinh. Ghep duoc thi cung xau va nhin ra ngay la lap.
+#
+# Day cung la cho art do AI tao ra dung duoc tot nhat: "ve mot ngoi nha go
+# chay rui nhin tu tren xuong" la viec AI lam ra duoc mot anh dung duoc.
+#
+# QUY UOC: goc toa do cua prop nam o CHAN no (day anh, giua chieu ngang).
+# Nho vay Y-sort so sanh dung - nhan vat dung phia tren thi bi prop che,
+# dung phia duoi thi che prop.
+
+TRUNK_L = (128, 92, 58, 255)
+TRUNK = (98, 68, 42, 255)
+TRUNK_D = (70, 48, 30, 255)
+
+
+def prop_tree():
+    """Cay 64x96. Chi phan goc cay chan duong, tan la thi di duoi duoc."""
+    px = blank(64, 96)
+
+    # Goc cay truoc, tan la ve de len sau.
+    rect(px, 27, 58, 36, 94, TRUNK)
+    rect(px, 27, 58, 29, 94, TRUNK_L)          # canh sang ben trai
+    rect(px, 34, 58, 36, 94, TRUNK_D)
+    for y in (66, 74, 84):                      # vet vo cay
+        rect(px, 30, y, 33, y, TRUNK_D)
+    rect(px, 24, 92, 39, 94, TRUNK_D)          # re banh ra
+
+    # Tan la: ba khoi elip long nhau cho khoi bi tron nhu qua bong.
+    ellipse(px, 32, 34, 30, 28, LEAF)
+    ellipse(px, 20, 26, 16, 14, LEAF_L)
+    ellipse(px, 44, 30, 15, 13, LEAF_L)
+    ellipse(px, 32, 48, 26, 14, LEAF_D)
+    for (x, y) in ((10, 30), (48, 20), (30, 12), (22, 46), (50, 44), (36, 36)):
+        ellipse(px, x, y, 5, 4, LEAF_D)
+    for (x, y) in ((18, 18), (40, 24), (28, 30), (14, 38)):
+        ellipse(px, x, y, 3, 3, LEAF_L)
+
+    add_outline(px)
+    return px
+
+
+def prop_burnt_house():
+    """Ngoi nha da chay rui 96x96 - chi con khung tuong va dam go."""
+    px = blank(96, 96)
+
+    # San tro ben trong.
+    rect(px, 8, 26, 87, 92, ASH)
+    _speckle(px, [(20, 40), (55, 34), (70, 60), (30, 70), (45, 80), (78, 45)],
+             ASH_D, size=3)
+
+    # Chan tuong con lai: ba mat, mat truoc (duoi) da sap het.
+    rect(px, 4, 20, 91, 30, CHAR)              # tuong sau
+    rect(px, 4, 20, 91, 21, CHAR_L)
+    rect(px, 4, 20, 14, 88, CHAR)              # tuong trai
+    rect(px, 81, 20, 91, 88, CHAR)             # tuong phai
+    rect(px, 4, 86, 14, 88, CHAR_D)
+    rect(px, 81, 86, 91, 88, CHAR_D)
+    # Tuong trai va phai vo lom cho - cho thay no da sap.
+    rect(px, 4, 52, 14, 62, CLEAR)
+    rect(px, 81, 40, 91, 48, CLEAR)
+
+    # Dam go chay nam cheo trong long nha.
+    for (x0, y0, x1, y1) in ((18, 44, 74, 50), (26, 62, 80, 68)):
+        rect(px, x0, y0, x1, y1, CHAR)
+        rect(px, x0, y0, x1, y0, CHAR_L)
+        rect(px, x0, y1, x1, y1, CHAR_D)
+    rect(px, 44, 28, 52, 84, CHAR)             # mot cot doc con dung
+    rect(px, 44, 28, 45, 84, CHAR_L)
+
+    add_outline(px)
+    return px
+
+
+def prop_gravestone():
+    """Bia mo 32x48."""
+    px = blank(32, 48)
+    rect(px, 5, 40, 26, 46, STONE_D)           # be
+    rect(px, 5, 40, 26, 41, STONE)
+    rect(px, 8, 10, 23, 42, STONE)             # than bia
+    ellipse(px, 15, 11, 8, 7, STONE)           # dinh vong cung
+    rect(px, 8, 10, 10, 42, STONE_L)           # canh sang
+    rect(px, 21, 14, 23, 42, STONE_D)
+    for y in (22, 27, 32):                      # dong chu khac
+        rect(px, 12, y, 19, y, STONE_D)
+    add_outline(px)
+    return px
+
+
+def prop_chair():
+    """Chiec ghe go 32x32 - chiec ghe trong truoc nha Edren."""
+    px = blank(32, 32)
+    rect(px, 9, 18, 23, 22, WOOD)              # mat ghe
+    rect(px, 9, 18, 23, 18, WOOD_L)
+    rect(px, 9, 22, 23, 22, WOOD_D)
+    rect(px, 9, 6, 23, 8, WOOD)                # thanh ngang tua lung
+    rect(px, 9, 6, 23, 6, WOOD_L)
+    for x in (11, 15, 19):                      # nan doc tua lung
+        rect(px, x, 8, x + 1, 18, WOOD)
+        rect(px, x, 8, x, 18, WOOD_D)
+    for x in (10, 21):                          # chan ghe
+        rect(px, x, 22, x + 1, 29, WOOD)
+        rect(px, x, 28, x + 1, 29, WOOD_D)
+    add_outline(px)
+    return px
+
+
+PROPS = [
+    # (ten file, ham ve, rong, cao)
+    ("prop_tree",        prop_tree,        64, 96),
+    ("prop_burnt_house", prop_burnt_house, 96, 96),
+    ("prop_gravestone",  prop_gravestone,  32, 48),
+    ("prop_chair",       prop_chair,       32, 32),
+]
+
+
 # ---------------------------------------------------------------- atlas tile
 #
 # TAT CA tile nam chung trong MOT file anh goi la "atlas". TileSet cua Godot
@@ -813,6 +954,7 @@ def build_terrain_atlas():
 # ---------------------------------------------------------------- main
 SPRITES = "assets/sprites"
 TILES = "assets/tiles"
+PROPS_DIR = "assets/props"
 
 
 def main():
@@ -834,6 +976,10 @@ def main():
     write_png(os.path.join(HERE, *f"{TILES}/terrain.png".split("/")),
               FRAME * ATLAS_COLS, FRAME * ATLAS_ROWS, build_terrain_atlas())
     print("   (atlas: " + ", ".join("%d:%d %s" % (c, r, n) for c, r, n, _f, _s in ATLAS) + ")")
+
+    for (name, fn, w, h) in PROPS:
+        write_png(os.path.join(HERE, *f"{PROPS_DIR}/{name}.png".split("/")), w, h, fn())
+
     print("Xong.")
 
 

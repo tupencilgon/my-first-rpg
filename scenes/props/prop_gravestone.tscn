@@ -1,0 +1,29 @@
+; Vat the (prop): mot anh PNG rieng + vung va cham tu ve bang tay.
+;
+; QUY UOC QUAN TRONG: goc toa do cua scene nay nam o CHAN vat the
+; (day anh, giua chieu ngang). Vi vay Sprite2D dat offset = (-16, -48).
+;
+; Nho quy uoc do ma Y-sort so sanh dung: nhan vat dung PHIA TREN vat the
+; thi bi vat the che, dung PHIA DUOI thi che vat the.
+;
+; Vung va cham chi bao quanh phan CHAN - tan cay hay mai nha thi nguoi choi
+; di duoi duoc, dung chan ca khoi anh.
+
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/props/prop_gravestone.png" id="1_tex"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
+size = Vector2(22, 8)
+
+[node name="PropGravestone" type="StaticBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+centered = false
+offset = Vector2(-16, -48)
+texture = ExtResource("1_tex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -4)
+shape = SubResource("RectangleShape2D_base")

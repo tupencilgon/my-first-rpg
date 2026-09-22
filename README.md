@@ -58,13 +58,15 @@ my-first-rpg/
 ├─ project.godot              cấu hình game (độ phân giải, renderer...)
 ├─ icon.svg                   icon hiện trên Godot & khi export
 ├─ scenes/
-│  ├─ main.tscn               màn chơi: 2 lớp TileMap, người chơi, UI
-│  └─ player.tscn             nhân vật (sprite + va chạm + camera)
+│  ├─ main.tscn               màn chơi: 2 lớp TileMap, World (Y-sort), UI
+│  ├─ player.tscn             nhân vật (4 lớp sprite + va chạm + camera)
+│  └─ props/*.tscn            vật thể: cây, nhà cháy, bia mộ, ghế
 ├─ scripts/
 │  ├─ player.gd               di chuyển & hoạt ảnh 4 hướng
 │  └─ touch_joystick.gd       joystick ảo cho điện thoại
 ├─ assets/
 │  ├─ sprites/*.png           các lớp sprite: body_*, outfit_*, helmet_*, weapon_*
+│  ├─ props/*.png             ảnh vật thể lớn (không phải tile)
 │  ├─ tiles/terrain.png       atlas: tất cả tile trong 1 ảnh (4 cột × 4 hàng)
 │  └─ tiles/terrain.tres      TileSet: cắt atlas thành lưới 32×32, khai báo va chạm
 ├─ docs/cot-truyen/           cốt truyện (chương 0…)
