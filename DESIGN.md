@@ -164,8 +164,16 @@ những viên 32px cho ra hình được.
 **Đây là chỗ art do AI tạo dùng được tốt nhất.** "Vẽ một ngôi nhà gỗ cháy rụi
 nhìn từ trên xuống" là việc AI làm ra được một ảnh dùng được ngay.
 
-Ảnh ở `assets/props/`, scene ở `scenes/props/`. Prop đã có: cây, nhà cháy,
+Ảnh ở `assets/props/`, scene ở `scenes/props/`. Prop đã có: cây, **nhà cháy**,
 bia mộ, ghế gỗ.
+
+**Nhà cháy** (96×112) vẽ theo ref `docs/art/map-source-v01/03_buildings.png`:
+móng đá cuội màu sáng, dầm gỗ cháy đen đổ chéo, lòng nhà là sàn tro.
+
+Va chạm của nó chia thành **5 khối theo từng bức tường** chứ không phải một
+khối đặc — mặt trước đã sập nên người chơi đi vào được trong lòng nhà. Đó là
+nơi Kael đào bới tìm mẹ và em trai (cảnh 4 của demo). Khoảng trống mặt trước
+rộng 33px, nhân vật có đường kính va chạm 14px nên qua thoải mái.
 
 ### Y-sort — nhân vật đi được ra sau vật thể
 

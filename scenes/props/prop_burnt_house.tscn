@@ -1,29 +1,52 @@
-; Vat the (prop): mot anh PNG rieng + vung va cham tu ve bang tay.
+; Ngoi nha da chay rui. Anh 96x112, goc toa do o CHAN (day anh, giua ngang).
 ;
-; QUY UOC QUAN TRONG: goc toa do cua scene nay nam o CHAN vat the
-; (day anh, giua chieu ngang). Vi vay Sprite2D dat offset = (-48, -96).
+; VA CHAM THEO TUNG BUC TUONG, khong phai mot khoi dac.
 ;
-; Nho quy uoc do ma Y-sort so sanh dung: nhan vat dung PHIA TREN vat the
-; thi bi vat the che, dung PHIA DUOI thi che vat the.
+; Vi sao: mat truoc nha da sap nen nguoi choi PHAI di vao duoc trong long nha
+; - do la noi Kael dao boi tim me va em trai (canh 4 cua demo). Neu cho ca
+; ngoi nha thanh mot khoi chan duong thi khong vao duoc.
 ;
-; Vung va cham chi bao quanh phan CHAN - tan cay hay mai nha thi nguoi choi
-; di duoi duoc, dung chan ca khoi anh.
+; Nam khoi chan: tuong sau, tuong trai, tuong phai, va hai chan tuong truoc.
+; Khoang trong o giua mat truoc rong 33 pixel - du cho nhan vat (duong kinh
+; va cham 14) di qua thoai mai.
 
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/props/prop_burnt_house.png" id="1_tex"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
-size = Vector2(88, 72)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_back"]
+size = Vector2(88, 18)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_side"]
+size = Vector2(14, 72)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_front"]
+size = Vector2(14, 16)
 
 [node name="PropBurntHouse" type="StaticBody2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
 centered = false
-offset = Vector2(-48, -96)
+offset = Vector2(-48, -112)
 texture = ExtResource("1_tex")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -36)
-shape = SubResource("RectangleShape2D_base")
+[node name="TuongSau" type="CollisionShape2D" parent="."]
+position = Vector2(0, -87)
+shape = SubResource("RectangleShape2D_back")
+
+[node name="TuongTrai" type="CollisionShape2D" parent="."]
+position = Vector2(-37, -42)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="TuongPhai" type="CollisionShape2D" parent="."]
+position = Vector2(37, -42)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="ChanTuongTruocTrai" type="CollisionShape2D" parent="."]
+position = Vector2(-24, -14)
+shape = SubResource("RectangleShape2D_front")
+
+[node name="ChanTuongTruocPhai" type="CollisionShape2D" parent="."]
+position = Vector2(23, -14)
+shape = SubResource("RectangleShape2D_front")

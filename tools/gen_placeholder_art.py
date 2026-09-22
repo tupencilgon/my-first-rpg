@@ -11,7 +11,7 @@ Nhan vat KHONG phai mot anh duy nhat. No la nhieu lop PNG chong len nhau:
     Body    <- than the: da, toc, mat, do lot. Lop nay co VIEN.
     Outfit  <- bo do (giap + quan). Ve de len than, khong can vien rieng.
     Helmet  <- mu. Ve de len toc.
-    Weapon  <- vu khi. Thò ra ngoai than nen CO vien rieng.
+    Weapon  <- vu khi. ThÃ² ra ngoai than nen CO vien rieng.
 
 Moi lop la 1 file PNG 128x128, cung bo cuc 4 cot x 4 hang, phan khong co gi
 thi de trong suot. Code trong player.gd gan CUNG MOT chi so frame cho ca 4 lop.
@@ -808,6 +808,115 @@ TRUNK_L = (128, 92, 58, 255)
 TRUNK = (98, 68, 42, 255)
 TRUNK_D = (70, 48, 30, 255)
 
+# --- Mau phe tich, lay tu ref docs/art/map-source-v01/03_buildings.png ---
+# Da mong nha la da cuoi mau SANG am, khong phai da xam lanh nhu tuong xay.
+RUIN_HL = (226, 220, 208, 255)
+RUIN = (188, 180, 166, 255)
+RUIN_SH = (142, 134, 122, 255)
+RUIN_DK = (96, 90, 82, 255)
+
+# Dam go da chay: den nhung con anh am o canh tren.
+BEAM_HL = (118, 90, 62, 255)
+BEAM = (74, 54, 40, 255)
+BEAM_DK = (42, 30, 22, 255)
+
+
+def _ell_clip(px, cx, cy, rx, ry, color, clip):
+    """Elip dac nhung chi ve trong khung clip = (x0, y0, x1, y1).
+
+    Can clip vi da ve theo hinh tron, neu khong chan lai thi vien tuong phinh
+    ra ngoai va buc tuong day gap doi y dinh.
+    """
+    for y in range(int(cy - ry), int(cy + ry) + 1):
+        if y < clip[1] or y > clip[3]:
+            continue
+        for x in range(int(cx - rx), int(cx + rx) + 1):
+            if x < clip[0] or x > clip[2]:
+                continue
+            dx = (x - cx) / float(rx)
+            dy = (y - cy) / float(ry)
+            if dx * dx + dy * dy <= 1.0:
+                dot(px, x, y, color)
+
+
+def _noise(x, y):
+    """So gia-ngau-nhien 0..255, luon cho cung ket qua voi cung (x, y).
+
+    Can "gia" ngau nhien chu khong dung random thuc: moi lan chay script phai
+    ra dung mot file anh, neu khong thi git bao file thay doi moi lan chay.
+    """
+    n = (x * 73856093) ^ (y * 19349663)
+    n = (n * 1274126177) & 0x7FFFFFFF
+    return (n >> 11) & 0xFF
+
+
+def _rock(px, cx, cy, rx, ry, clip, vary=True):
+    """Mot vien da cuoi: nen toi, than da, va diem sang o MOT SO vien.
+
+    Hai meo chong lai cai nhin "luoi deu tap tap":
+      - moi vien to nho khac nhau mot chut (theo _noise)
+      - chi khoang mot phan ba so vien co diem sang
+    Neu vien nao cung y het nhau thi buc tuong trong nhu giay ke o vuong.
+    """
+    if vary:
+        n = _noise(cx, cy)
+        rx = max(2, rx + (n % 3) - 1)
+        ry = max(2, ry + ((n >> 3) % 3) - 1)
+
+    _ell_clip(px, cx, cy, rx, ry, RUIN_SH, clip)
+    _ell_clip(px, cx, cy - 1, rx, ry - 1, RUIN, clip)
+    if not vary or _noise(cx + 7, cy + 3) % 3 == 0:
+        _ell_clip(px, cx - 1, cy - ry + 1, max(1, rx - 2), 1, RUIN_HL, clip)
+
+
+def _rock_band(px, x0, y0, x1, y1, sw=7, sh=6):
+    """Lap day mot dai bang cac vien da xep so le nhu tuong xay.
+
+    Tra nen bang mau toi TRUOC roi moi ve da len: khe giua cac vien da se lo
+    ra mau toi do, nho vay tung vien da tach nhau ro rang.
+
+    Da duoc phep phinh ra ngoai bien 1 pixel - dung nhu ref, giup bien tuong
+    khong phang li nhu ke thuoc.
+    """
+    clip = (x0 - 1, y0 - 1, x1 + 1, y1 + 1)
+    rect(px, x0, y0, x1, y1, RUIN_DK)
+
+    row = 0
+    cy = y0 + sh // 2
+    while cy - sh // 2 <= y1:
+        shift = (row % 2) * (sw // 2)
+        cx = x0 + sw // 2 - shift
+        while cx - sw // 2 <= x1:
+            _rock(px, cx, cy, sw // 2, sh // 2, clip)
+            cx += sw
+        cy += sh - 1
+        row += 1
+
+
+def _beam(px, x0, y0, x1, y1, w=3):
+    """Dam go chay, ve nhu mot duong day w pixel, co canh tren sang.
+
+    Lay mau doc theo duong roi dong mot "co" vuong - cach don gian nhat de ve
+    duong cheo day trong pixel art ma khong bi rang cua.
+    """
+    steps = max(abs(x1 - x0), abs(y1 - y0)) * 2 + 1
+    half = w // 2
+    pts = []
+    for i in range(steps + 1):
+        t = i / float(steps)
+        cx = int(round(x0 + (x1 - x0) * t))
+        cy = int(round(y0 + (y1 - y0) * t))
+        pts.append((cx, cy))
+
+    for (cx, cy) in pts:
+        rect(px, cx - half, cy - half, cx + half, cy + half, BEAM)
+    # Canh duoi toi truoc, roi mot vach sang MANH o canh tren. Vach sang day
+    # hon 1 pixel thi dam go trong nhu que go tuoi, khong ra go da chay.
+    for (cx, cy) in pts:
+        rect(px, cx - half, cy + half, cx + half, cy + half, BEAM_DK)
+    for (cx, cy) in pts:
+        dot(px, cx - half + 1, cy - half, BEAM_HL)
+
 
 def prop_tree():
     """Cay 64x96. Chi phan goc cay chan duong, tan la thi di duoi duoc."""
@@ -836,32 +945,67 @@ def prop_tree():
 
 
 def prop_burnt_house():
-    """Ngoi nha da chay rui 96x96 - chi con khung tuong va dam go."""
-    px = blank(96, 96)
+    """Ngoi nha da chay rui 96x112.
 
-    # San tro ben trong.
-    rect(px, 8, 26, 87, 92, ASH)
-    _speckle(px, [(20, 40), (55, 34), (70, 60), (30, 70), (45, 80), (78, 45)],
-             ASH_D, size=3)
+    Dung theo ref docs/art/map-source-v01/03_buildings.png: mong nha bang da
+    cuoi mau sang, dam go chay den do cheo, long nha la san tro.
 
-    # Chan tuong con lai: ba mat, mat truoc (duoi) da sap het.
-    rect(px, 4, 20, 91, 30, CHAR)              # tuong sau
-    rect(px, 4, 20, 91, 21, CHAR_L)
-    rect(px, 4, 20, 14, 88, CHAR)              # tuong trai
-    rect(px, 81, 20, 91, 88, CHAR)             # tuong phai
-    rect(px, 4, 86, 14, 88, CHAR_D)
-    rect(px, 81, 86, 91, 88, CHAR_D)
-    # Tuong trai va phai vo lom cho - cho thay no da sap.
-    rect(px, 4, 52, 14, 62, CLEAR)
-    rect(px, 81, 40, 91, 48, CLEAR)
+    Bo cuc (toa do trong anh, 0,0 o goc tren-trai):
+        y  0..34   dam go choi len tren mai da sap
+        y 16..36   tuong sau
+        y 16..100  tuong trai (x 4..20) va tuong phai (x 76..92)
+        y 34..100  san tro ben trong
+        y 88..106  chan tuong truoc, chua mot khoang trong o giua = cua sap
+    """
+    W, H = 96, 112
+    px = blank(W, H)
 
-    # Dam go chay nam cheo trong long nha.
-    for (x0, y0, x1, y1) in ((18, 44, 74, 50), (26, 62, 80, 68)):
-        rect(px, x0, y0, x1, y1, CHAR)
-        rect(px, x0, y0, x1, y0, CHAR_L)
-        rect(px, x0, y1, x1, y1, CHAR_D)
-    rect(px, 44, 28, 52, 84, CHAR)             # mot cot doc con dung
-    rect(px, 44, 28, 45, 84, CHAR_L)
+    # --- San tro ben trong, ve truoc de tuong va dam phu len ---
+    rect(px, 14, 34, 82, 102, ASH)
+    rect(px, 14, 34, 82, 37, ASH_D)                   # bong duoi chan tuong sau
+    rect(px, 14, 96, 82, 102, ASH_D)                  # bong sat chan tuong truoc
+    # Ket cau tro: rac day hon phan truoc de san khong phang li nhu be tong.
+    for y in range(36, 101, 3):
+        for x in range(16, 81, 3):
+            n = _noise(x, y)
+            if n % 5 == 0:
+                _speckle(px, [(x, y)], ASH_D, size=2)
+            elif n % 7 == 0:
+                _speckle(px, [(x, y)], ASH_L, size=1)
+            elif n % 23 == 0:
+                _speckle(px, [(x, y)], CHAR_D, size=1)   # man than con lai
+
+    # --- Mong nha bang da. Tuong day 14px = 2 vien da xep ngang. ---
+    _rock_band(px, 4, 16, 91, 33)                     # tuong sau
+    _rock_band(px, 4, 34, 17, 101)                    # tuong trai
+    _rock_band(px, 78, 34, 91, 101)                   # tuong phai
+    _rock_band(px, 4, 90, 31, 105)                    # chan tuong truoc - trai
+    _rock_band(px, 64, 90, 91, 105)                   # chan tuong truoc - phai
+
+    # Tuong hai ben vo lom - dung hinh elip chong nhau thay vi hinh chu nhat.
+    # Cat bang chu nhat thi vet vo vuong vuc nhu ai lay thuoc ke, khong ra sap.
+    for (cx, cy, rx, ry) in ((10, 62, 9, 6), (14, 57, 5, 4),
+                             (85, 48, 9, 5), (82, 53, 5, 3)):
+        ellipse(px, cx, cy, rx, ry, CLEAR)
+
+    # --- Dam go chay ---
+    # Bo cuc do sap, KHONG phai gian giao: mot dam dai chong len tuong sau,
+    # mot dam ngan hon nga nguoc lai, may dam roi nam duoi san voi do dai khac
+    # nhau. Hai dam dai bang nhau bat cheo se thanh hinh chu A rat gia.
+    _beam(px, 14, 98, 44, 26, 5)                      # dam dai chong len tuong sau
+    _beam(px, 88, 76, 64, 30, 4)                      # dam ngan hon, nga nguoc
+    _beam(px, 24, 46, 58, 52, 4)                      # dam roi ngang, lech tam
+    _beam(px, 40, 86, 76, 80, 4)                      # dam roi thu hai, phia duoi
+    _beam(px, 26, 40, 26, 6, 4)                       # cot doc con dung
+    _beam(px, 66, 34, 68, 12, 3)                      # cot doc da vo, ngan
+
+    # --- Manh vo tren san ---
+    floor_clip = (18, 34, 78, 101)
+    _beam(px, 32, 68, 42, 70, 3)
+    _beam(px, 58, 92, 70, 90, 3)
+    _beam(px, 46, 76, 52, 74, 2)
+    for (cx, cy) in ((36, 60), (66, 64), (30, 90), (56, 66), (72, 40), (48, 96)):
+        _rock(px, cx, cy, 2, 2, floor_clip)
 
     add_outline(px)
     return px
@@ -903,7 +1047,7 @@ def prop_chair():
 PROPS = [
     # (ten file, ham ve, rong, cao)
     ("prop_tree",        prop_tree,        64, 96),
-    ("prop_burnt_house", prop_burnt_house, 96, 96),
+    ("prop_burnt_house", prop_burnt_house, 96, 112),
     ("prop_gravestone",  prop_gravestone,  32, 48),
     ("prop_chair",       prop_chair,       32, 32),
 ]

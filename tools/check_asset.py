@@ -11,6 +11,9 @@ CACH DUNG
     python tools/check_asset.py <anh.png> --size 128x128 --key ffffff
         -> them: bien mau trang thanh nen trong suot
 
+    python tools/check_asset.py <anh.png> --size 128x128 --flatten-alpha
+        -> them: ep alpha ve nhi phan (0 hoac 255)
+
     python tools/check_asset.py <anh.png> --size 32x32 -o assets/tiles/da.png
         -> chi dinh noi luu
 
@@ -126,13 +129,25 @@ def detect_block_size(px, w, h):
     return g
 
 
+# Alpha tu nguong nay tro len thi coi la DAC.
+#
+# Vi sao khong doi dung 255: nhieu cong cu xuat anh (vi du sprite slicer) tra
+# ve alpha 252-253 cho pixel that ra la dac hoan toan. Neu chi nhan 255 thi
+# bao cao sai het: "73% pixel mo vien" va "chi co 5 mau" - trong khi anh hoan
+# toan binh thuong, chi lech alpha vai don vi.
+NEAR_OPAQUE = 250
+
+
 def analyze(path):
     w, h, px = read_png(path)
     flat = [p for row in px for p in row]
 
     colors = Counter(flat)
-    opaque = [p for p in flat if p[3] == 255]
-    semi = sum(1 for p in flat if 0 < p[3] < 255)
+    # Dem mau theo RGB, BO QUA alpha. Neu khong thi cung mot mau nhung alpha
+    # 253 va 252 se bi dem thanh hai mau khac nhau.
+    opaque = [(p[0], p[1], p[2]) for p in flat if p[3] >= NEAR_OPAQUE]
+    semi = sum(1 for p in flat if 0 < p[3] < NEAR_OPAQUE)
+    nearly = sum(1 for p in flat if NEAR_OPAQUE <= p[3] < 255)
     clear = sum(1 for p in flat if p[3] == 0)
 
     # Doan mau nen: mau xuat hien nhieu nhat o vien anh.
@@ -145,7 +160,7 @@ def analyze(path):
         "block": detect_block_size(px, w, h),
         "colors": len(colors),
         "opaque_colors": len(set(opaque)),
-        "semi": semi, "clear": clear,
+        "semi": semi, "nearly": nearly, "clear": clear,
         "bg_color": bg[0], "bg_ratio": bg[1] / len(border),
     }
 
@@ -188,6 +203,11 @@ def report(a, target=None):
         tag = WARN if pct < 5 else BAD
         print("%s%d pixel co vien ban trong suot (%.1f%%)." % (tag, a["semi"], pct))
         print("        Pixel art that gan nhu khong co pixel nao nhu vay.")
+    elif a["nearly"] > 0:
+        print("%s%d pixel co alpha %d-254 thay vi 255." % (WARN, a["nearly"], NEAR_OPAQUE))
+        print("        Nhin bang mat thi khong thay, nhung Godot van pha mau voi")
+        print("        nen mot chut. Nhieu cong cu xuat anh hay bi loi nay.")
+        print("        Chay lai voi  --flatten-alpha  de ep het ve 0 hoac 255.")
     elif block == 1 and not native:
         print("%sKhong co vien ban trong suot - nhung anh van mo mau (xem muc tren)." % WARN)
     else:
@@ -235,7 +255,7 @@ def report(a, target=None):
 
 
 # ---------------------------------------------------------------- chuyen doi
-def convert(a, target, key=None):
+def convert(a, target, key=None, flatten=False):
     w, h, px = a["w"], a["h"], a["px"]
     tw, th = target
 
@@ -248,6 +268,22 @@ def convert(a, target, key=None):
         # dong mau nen lay o dau cung the; voi anh mo thi day la cach giu
         # duoc mau sac net nhat (khong trung binh -> khong tao mau moi).
         px = [[px[y * f][x * f] for x in range(tw)] for y in range(th)]
+
+    if flatten:
+        # Ep alpha ve nhi phan: >=128 thanh dac hoan toan, con lai thanh trong
+        # suot hoan toan. Pixel art khong bao gio can gia tri o giua.
+        n = 0
+        for y in range(th):
+            for x in range(tw):
+                r, g, b, al = px[y][x]
+                if al >= 128:
+                    if al != 255:
+                        px[y][x] = (r, g, b, 255)
+                        n += 1
+                elif al != 0:
+                    px[y][x] = (0, 0, 0, 0)
+                    n += 1
+        print("\nDa ep alpha ve nhi phan: sua %d pixel." % n)
 
     if key is not None:
         n = 0
@@ -267,7 +303,7 @@ def parse_args(argv):
     if not argv:
         print(__doc__)
         sys.exit(1)
-    opts = {"path": argv[0], "size": None, "key": None, "out": None}
+    opts = {"path": argv[0], "size": None, "key": None, "out": None, "flatten": False}
     i = 1
     while i < len(argv):
         arg = argv[i]
@@ -278,6 +314,8 @@ def parse_args(argv):
             i += 1
             v = argv[i].lstrip("#")
             opts["key"] = (int(v[0:2], 16), int(v[2:4], 16), int(v[4:6], 16))
+        elif arg == "--flatten-alpha":
+            opts["flatten"] = True
         elif arg in ("-o", "--out"):
             i += 1
             opts["out"] = argv[i]
@@ -308,11 +346,11 @@ def main():
 
     # Da dung kich thuoc va khong can bo nen -> khong co gi de lam.
     # Tranh viec ghi ra mot file trung lap khong ai can.
-    if (a["w"], a["h"]) == tuple(o["size"]) and o["key"] is None:
+    if (a["w"], a["h"]) == tuple(o["size"]) and o["key"] is None and not o["flatten"]:
         print("\nAnh da dung chuan roi - khong can chuyen doi gi.")
         return
 
-    px = convert(a, o["size"], o["key"])
+    px = convert(a, o["size"], o["key"], o["flatten"])
     if px is None:
         sys.exit(1)
 
