@@ -101,9 +101,20 @@ Tức là: **tile HD cho mặt đất + prop HD đặt lên trên + ảnh vẽ s
 
 ---
 
+## Công cụ đi kèm
+
+`addons/bang_asset/` — panel trong cột bên phải Godot. Thả PNG vào
+`assets/hd/`, bấm Quét lại, nó hiện ra kèm dòng **"= X.X × Kael cao"**, rồi
+một nút biến nó thành prop có va chạm và gốc toạ độ ở chân.
+
+Dòng "× Kael cao" là thứ thay thế cho lưới 32px đã bỏ: nó là cách duy nhất còn
+lại để bắt lỗi tỉ lệ trước khi asset vào bản đồ.
+
+Chi tiết: `addons/bang_asset/README.md`
+
 ## Nếu chốt hướng này, cần làm
 
-1. Ghi quy tắc tỉ lệ vào `DESIGN.md` (Kael = 126px là đơn vị gốc)
+1. ~~Ghi quy tắc tỉ lệ~~ ✅ panel đo bằng "× Kael cao" (126px)
 2. Đổi `project.godot`: 1920×1080, bỏ phóng to số nguyên
 3. Đổi cỡ `02_ground_materials.png` → atlas 512×512 (16 tile 128px)
 4. TileSet mới 128px, khai báo ô nào chặn đường
