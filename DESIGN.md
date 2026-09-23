@@ -1,5 +1,7 @@
 # Thiết kế — bản demo
 
+> Cập nhật 22/09/2026: yêu cầu mới mở rộng thành ARPG có chiến đấu và nhiều map. Scene `arpg.tscn` tuân theo phạm vi mới trong `docs/ARPG-BAN-CHOI.md`. Giới hạn “không có chiến đấu” dưới đây chỉ còn mô tả demo cũ ở `main.tscn`.
+
 > Tài liệu này chốt những gì **ràng buộc art và code**. Nó cố tình ngắn.
 > Cốt truyện đầy đủ nằm ở `docs/cot-truyen/`.
 

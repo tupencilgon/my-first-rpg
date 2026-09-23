@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="My First RPG"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/arpg.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -25,12 +25,12 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/stretch/scale_mode="integer"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/bang_asset/plugin.cfg")
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/bang_asset/plugin.cfg")

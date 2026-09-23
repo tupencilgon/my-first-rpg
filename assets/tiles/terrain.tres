@@ -1,28 +1,6 @@
-; TileSet - "bo tem" cua game.
-;
-; File nay noi cho Godot biet:
-;   1. Anh atlas nao chua cac tile  (terrain.png)
-;   2. Moi o to bao nhieu           (32x32)
-;   3. O nao co va cham, o nao di qua duoc
-;
-; Toa do o duoi day phai khop voi bien ATLAS trong tools/gen_placeholder_art.py
-;
-;   Lang binh thuong + hang dong:
-;     0:0 co          1:0 duong dat    2:0 san da        3:0 san go
-;     0:1 nuoc *      1:1 tuong da *   2:1 san hang      3:1 vach hang *
-;
-;   Aster sau dem chay:
-;     0:2 tro tan     1:2 co chay      2:2 san go chay   3:2 duong manh vo
-;     0:3 go do sap * 1:3 tan cay *    2:3 dat nghia trang  3:3 soi da
-;
-;   (*) = co va cham, nguoi choi khong di qua duoc
-;
-; Ban NEN sua file nay qua giao dien Godot (chon TileMapLayer -> tab TileSet
-; o khung duoi) thay vi sua tay.
+[gd_resource type="TileSet" format=3 uid="uid://dycwxdvef8irw"]
 
-[gd_resource type="TileSet" load_steps=3 format=3]
-
-[ext_resource type="Texture2D" path="res://assets/tiles/terrain.png" id="1_terrain"]
+[ext_resource type="Texture2D" uid="uid://2vb185d1ne3h" path="res://assets/tiles/terrain.png" id="1_terrain"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_terrain"]
 texture = ExtResource("1_terrain")

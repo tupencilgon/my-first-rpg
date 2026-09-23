@@ -1,5 +1,11 @@
 # My First RPG
 
+**Giao diện làm lại (v3):** toàn bộ `hud.gd` và `ui_assets.gd` được viết lại — icon thu nhỏ đúng cách, khung chạm trổ chỉ dùng cho cửa sổ, bố cục theo neo thay vì toạ độ chết. Lý do và danh sách lỗi đã sửa: [docs/GIAO-DIEN-V3.md](docs/GIAO-DIEN-V3.md). Phần lõi gameplay không đổi.
+
+**Nâng cấp v2:** giao diện Aster mới, 18 icon riêng và 7 bộ quái có 4 hướng/8 khung mỗi hướng. Xem [hướng dẫn v2](docs/ARPG-V2.md); ảnh tạo mới và bản ghi ImageGen ở `assets/arpg_v2/` và `docs/arpg-v2-*-prompts.md`.
+
+**Bản ARPG mới:** nhấn F5 để chạy **Aster — Tro tàn & Hy vọng** (3 vùng, 10 map, nhiệm vụ Chương 0, chiến đấu, trang bị, rèn, lưu/tải). Xem [hướng dẫn bản chơi](docs/ARPG-BAN-CHOI.md) để biết phím và phạm vi đã làm. Scene mới: `scenes/arpg.tscn`; scene `main.tscn` và bản đồ vẽ tay cũ vẫn giữ nguyên. Các hướng dẫn demo bên dưới mô tả phiên bản trước.
+
 Game 2D pixel art top-down, làm bằng **Godot 4.7** + **GDScript**.
 Mục tiêu nền tảng: **Windows/PC, Android, iOS**.
 
